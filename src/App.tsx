@@ -1,144 +1,40 @@
-import "./App.css";
+import Header from "./Component/Header";
+import Banner from "./Component/Banner";
+import ForYou from "./Component/ForYou";
+import ComprehensiveService from "./Component/ComprehensiveService";
+import Specialty from "./Component/Specialty";
+import MedicalFacility from "./Component/MedicalFacility";
+import Doctor from "./Component/Doctor";
+import RemoteExamination from "./Component/RemoteExamination";
+import MentalHealth from "./Component/MentalHealth";
+import Handbook from "./Component/Handbook";
 
 function App() {
   return (
     <>
-      {/*Header*/}
-      <div className="tw-w-full tw-h-[78px] tw-bg-[rgb(237,255,250)]">
-        <div className="tw-flex tw-gap-10 tw-max-w-6xl tw-h-full tw-mx-auto">
-          {/*Header left*/}
-          <div className=" tw-flex tw-items-center tw-gap-4">
-            <a href="">
-              <img
-                src="./svg/icon_menu.svg"
-                alt=""
-                className="tw-w-[36px] tw-h-[36px] "
-              />
-            </a>
-            <a href="">
-              <img
-                src="./svg/logo.svg"
-                alt=""
-                className="tw-w-[200px] tw-h-[43px]"
-              />
-            </a>
-          </div>
-          {/*Header middle*/}
-          <div className="tw-flex  tw-gap-4 tw-items-center">
-            <div>
-              <ul className="tw-flex tw-gap-8">
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Chuyên khoa
-                  </a>
-                  <p className="tw-text-[10px]">Tìm bác sĩ theo chuyên khoa</p>
-                </li>
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Cơ sở y tế
-                  </a>
-                  <p className="tw-text-[10px]">
-                    Chọn bệnh viện phòng khám bệnh
-                  </p>
-                </li>
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Bác sĩ
-                  </a>
-                  <p className="tw-text-[10px]">Chọn bác sĩ giỏi</p>
-                </li>
-              </ul>
-            </div>
-            <div className="tw-flex tw-relative tw-items-center">
-              <i className="fas fa-search tw-absolute tw-p-2"></i>
-              <input
-                type="text"
-                className="tw-py-2 tw-px-7 tw-rounded-2xl tw-border-2 tw-border-gray-500"
-                placeholder="Tìm kiếm"
-              />
-            </div>
-          </div>
-          {/*Header right*/}
-          <div className="tw-content-center">
-            <a href="">
-              <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text tw-text-[rgb(69,195,210)]">
-                <img src="./svg/LịchHẹn.svg" alt="" />
-                <p>Lịch Hẹn</p>
-              </div>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/*Banner*/}
-      <div
-        className="tw-w-full tw-h-[445px] tw-bg-cover tw-bg-center tw-bg-no-repeat"
-        style={{ backgroundImage: "url('./jpg/bannerHome1.jpg')" }}
-      ></div>
+      <Header />
+      <Banner />
       {/* Dành cho bạn*/}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-text-2xl tw-font-medium">
           <p>Dành cho bạn</p>
         </div>
-        <div className="tw-flex tw-gap-10">
-          <a href="">
-            <div className="tw-p-4 tw-flex tw-flex-col tw-gap-2">
-              <div>
-                <img
-                  src="./png/Danhchoban-CSYT.png"
-                  alt=""
-                  className="tw-w-[178px] tw-rounded-full"
-                />
-              </div>
-              <div className="tw-text-center tw-text-lg tw-font-medium">
-                <p>Cơ sở y tế</p>
-              </div>
-            </div>
-          </a>
+        {/* */}
+        <div className="tw-flex tw-gap-10 sm: tw-flex-wrap tw-justify-center">
+          <ForYou></ForYou>
         </div>
       </div>
 
       {/* Dịch vụ toàn diện */}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8 ">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-text-2xl tw-font-medium">
           <p>Dịch vụ toàn diện</p>
         </div>
-        <div className="tw-flex tw-justify-between tw-mt-5">
-          <div
-            className="tw-flex tw-gap-10 tw-w-[568px] tw-h-[96px] tw-rounded-2xl tw-border-2 tw-bg-cover tw-bg-center tw-bg-no-repeat"
-            style={{ backgroundImage: "url('./png/ic_background.png')" }}
-          >
-            <div className="tw-content-center tw-ml-10">
-              <img
-                src="./png/iconkham-chuyen-khoa.png"
-                alt=""
-                className="tw-w-[56px] tw-h-[56px]"
-              />
-            </div>
-            <div className="tw-content-center tw-text-2xl">
-              <p>Khám Chuyên Khoa</p>
-            </div>
-          </div>
-          <div
-            className="tw-flex tw-gap-10 tw-w-[568px] tw-h-[96px] tw-rounded-2xl tw-border-2 tw-bg-cover tw-bg-center tw-bg-no-repeat"
-            style={{ backgroundImage: "url('./png/ic_background.png')" }}
-          >
-            <div className="tw-content-center tw-ml-10">
-              <img
-                src="./png/iconkham-nha-khoa.png"
-                alt=""
-                className="tw-w-[56px] tw-h-[56px]"
-              />
-            </div>
-            <div className="tw-content-center tw-text-2xl">
-              <p>Khám Nha Khoa</p>
-            </div>
-          </div>
-        </div>
+        <ComprehensiveService />
       </div>
 
       {/* Chuyên khoa*/}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-flex tw-justify-between">
           <div className="tw-text-2xl tw-font-medium tw-content-center">
             <p>Chuyên khoa</p>
@@ -147,26 +43,13 @@ function App() {
             <button>Xem thêm</button>
           </div>
         </div>
-        <a href="">
-          <div className="tw-my-4">
-            <div className="tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
-              <div className="tw-p-5">
-                <img
-                  src="./png/co-xuong-khop.png"
-                  alt=""
-                  className="tw-rounded-xl tw-w-[277px] tw-h-[174px]"
-                />
-              </div>
-              <div className="tw-text-center tw-text-lg tw-font-medium">
-                <p>Cơ Xương Khớp</p>
-              </div>
-            </div>
-          </div>
-        </a>
+        <div className="tw-flex tw-gap-16">
+          <Specialty />
+        </div>
       </div>
 
       {/* Cơ sở y tế*/}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-flex tw-justify-between">
           <div className="tw-text-2xl tw-font-medium tw-content-center">
             <p>Cơ sở y tế</p>
@@ -175,30 +58,17 @@ function App() {
             <button>Xem thêm</button>
           </div>
         </div>
-        <a href="">
-          <div className="tw-my-4">
-            <div className="tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
-              <div className="tw-p-5">
-                <img
-                  src="./jpg/logo-vietduc.jpg"
-                  alt=""
-                  className="tw-rounded-xl tw-w-[266px] tw-h-[126px]"
-                />
-              </div>
-              <div className="tw-text-center tw-text-lg tw-font-medium">
-                <p>Bệnh viện Hữu nghị Việt Đức</p>
-              </div>
-            </div>
-          </div>
-        </a>
+        <div className="tw-flex tw-gap-16">
+          <MedicalFacility />
+        </div>
       </div>
 
       {/* bác sĩ nổi bật*/}
       <div
-        className="tw-w-full tw-h-[400px]"
+        className="tw-w-full tw-min-h-[200px]"
         style={{ backgroundImage: "url('./png/bachgroundDấuCộng.png')" }}
       >
-        <div className="tw-max-w-6xl tw-mx-auto tw-pt-5">
+        <div className="tw-max-w-6xl tw-mx-auto tw-pt-5 sm: tw-px-3">
           <div className="tw-flex tw-justify-between">
             <div className="tw-text-2xl tw-font-medium tw-content-center">
               <p>Khám từ xa</p>
@@ -207,30 +77,14 @@ function App() {
               <button>Xem thêm</button>
             </div>
           </div>
-          <div className="tw-flex tw-gap-10">
-            <div className="tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-w-[252px]">
-              <div className="tw-m-auto">
-                <img
-                  src="./png/doctor1.png"
-                  alt=""
-                  className="tw-w-[178px] tw-rounded-full"
-                />
-              </div>
-              <div className="tw-text-center ">
-                <p className="tw-text-lg tw-font-medium">
-                  Thầy thuốc Ưu tú, Bác sĩ CKII Nguyễn Tiến Lãng
-                </p>
-                <p className="tw-text-base tw-text-gray-400">
-                  Tiểu đường - Nội tiết,Ung bướu,Tuyến giáp
-                </p>
-              </div>
-            </div>
+          <div className="tw-flex tw-gap-8">
+            <Doctor />
           </div>
         </div>
       </div>
 
       {/* Khám từ xa*/}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-flex tw-justify-between">
           <div className="tw-text-2xl tw-font-medium tw-content-center">
             <p>Khám từ xa</p>
@@ -239,26 +93,13 @@ function App() {
             <button>Xem thêm</button>
           </div>
         </div>
-        <a href="">
-          <div className="tw-my-4">
-            <div className="tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
-              <div className="tw-p-5">
-                <img
-                  src="./png/KhámTừXa1.png"
-                  alt=""
-                  className="tw-rounded-xl tw-w-[277px] tw-h-[174px]"
-                />
-              </div>
-              <div className="tw-text-center tw-text-lg tw-font-medium">
-                <p>Tư vấn, trị liệu Tâm lý từ xa</p>
-              </div>
-            </div>
-          </div>
-        </a>
+        <div className="tw-flex tw-gap-16">
+          <RemoteExamination />
+        </div>
       </div>
 
       {/* Gợi ý của BookingCare*/}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto sm: tw-px-3">
         <div className="tw-text-2xl tw-font-medium">
           <p>Gợi ý của BookingCare</p>
         </div>
@@ -282,34 +123,21 @@ function App() {
 
       {/* Sức khỏe tinh thần */}
       <div
-        className="tw-w-full tw-h-[370px]"
+        className="tw-w-full tw-min-h-[200px]"
         style={{ backgroundImage: "url('./png/background.png')" }}
       >
-        <div className="tw-max-w-6xl tw-mx-auto tw-pt-5">
+        <div className="tw-max-w-6xl tw-mx-auto tw-py-5 sm: tw-px-3 ">
           <div className="tw-text-2xl tw-font-normal">
             <p>Sức khỏe tinh thần</p>
           </div>
-          <div className="tw-mt-7">
-            <div className="tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
-              <a href="">
-                <div className="tw-p-5">
-                  <img
-                    src="./jpeg/SứcKhỏeTinhThần1.jpeg"
-                    alt=""
-                    className="tw-rounded-xl"
-                  />
-                </div>
-                <div className="tw-text-center tw-text-lg tw-font-medium">
-                  <p>Bài test sức khỏe</p>
-                </div>
-              </a>
-            </div>
+          <div className="tw-flex tw-gap-16 tw-mt-7">
+            <MentalHealth />
           </div>
         </div>
       </div>
 
       {/* cẩm nang */}
-      <div className="tw-max-w-6xl tw-h-80 tw-mx-auto tw-my-8">
+      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto tw-my-8 sm: tw-px-3">
         <div className="tw-flex tw-justify-between">
           <div className="tw-text-2xl tw-font-medium tw-content-center">
             <p>Cẩm nang</p>
@@ -318,24 +146,15 @@ function App() {
             <button>Xem thêm</button>
           </div>
         </div>
-        <div className="tw-flex tw-gap-10 tw-my-4">
-          <div>
-            <a href="" className="tw-flex tw-flex-col tw-gap-3">
-              <div>
-                <img src="./png/cẩmnang1.png" alt="" className="tw-w-56" />
-              </div>
-              <div className="tw-w-56 tw-text-base tw-font-medium">
-                <p>Review 8 Spa massage chân thư giãn, hiệu quả Hà Nội</p>
-              </div>
-            </a>
-          </div>
+        <div className="tw-flex tw-gap-16 tw-my-4">
+          <Handbook />
         </div>
       </div>
 
       {/* footer */}
       <footer className="tw-w-full tw-h-full tw-bg-gray-200">
         {/* footer1 */}
-        <div className="tw-grid tw-grid-cols-3 tw-gap-x-5 tw-max-w-6xl tw-mx-auto tw-py-5 ">
+        <div className="tw-grid xl:tw-grid-cols-3 tw-gap-x-5 tw-max-w-6xl tw-mx-auto tw-py-5 sm: tw-grid-cols-1 sm: tw-gap-10 sm: tw-p-4 md:tw-grid-cols-3">
           <div className="tw-flex tw-flex-col tw-gap-2">
             <p className="tw-font-bold tw-text-sm">
               Công ty Cổ phần Công nghệ BookingCare
@@ -407,11 +226,11 @@ function App() {
               <p>Đối tác bảo trợ nội dung</p>
             </div>
             <div className="tw-flex tw-flex-row tw-gap-2">
-              <div className="tw-m-auto">
+              <div className="tw-content-center">
                 <img
                   src="./png/hellodoctorlogo.png"
                   alt=""
-                  className="tw-w-16"
+                  className="tw-w-16 "
                 />
               </div>
               <div className="tw-text-sm">
@@ -420,7 +239,7 @@ function App() {
               </div>
             </div>
             <div className="tw-flex tw-flex-row tw-gap-2">
-              <div className="tw-m-auto">
+              <div className="tw-content-center">
                 <img src="./png/logobernard.png" alt="" className="tw-w-16" />
               </div>
               <div className="tw-text-sm">
@@ -431,7 +250,7 @@ function App() {
               </div>
             </div>
             <div className="tw-flex tw-flex-row tw-gap-2">
-              <div className="tw-m-auto">
+              <div className="tw-content-center">
                 <img
                   src="./png/logo-doctor-check.png"
                   alt=""
@@ -449,7 +268,7 @@ function App() {
         </div>
         <hr className="tw-max-w-6xl tw-mx-auto tw-border-t-2 tw-border-gray-400" />
         {/* footer2 */}
-        <div className="tw-flex tw-gap-2 tw-max-w-6xl tw-mx-auto tw-m-1">
+        <div className="tw-flex tw-gap-2 tw-max-w-6xl tw-mx-auto tw-m-1 sm: tw-p-4">
           <div>
             <i className="fas fa-mobile-alt"></i>
           </div>
@@ -463,8 +282,9 @@ function App() {
             </p>
           </div>
         </div>
+        {/* footer3 */}
         <div className="tw-bg-blue-400 tw-h-20 tw-mt-4">
-          <div className="tw-flex tw-justify-between tw-max-w-6xl tw-mx-auto">
+          <div className="tw-flex tw-justify-between tw-max-w-6xl tw-mx-auto sm: tw-p-4">
             <div className="tw-text-xs tw-text-gray-300 tw-mt-2">
               <p>© 2025 BookingCare.</p>
             </div>
