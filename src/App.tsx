@@ -8,6 +8,7 @@ import Doctor from "./Component/Doctor";
 import RemoteExamination from "./Component/RemoteExamination";
 import MentalHealth from "./Component/MentalHealth";
 import Handbook from "./Component/Handbook";
+import "react-slideshow-image/dist/styles.css";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <p>Dành cho bạn</p>
         </div>
         {/* */}
-        <div className="tw-flex tw-gap-10 sm: tw-flex-wrap tw-justify-center">
+        <div className="md:tw-flex tw-grid tw-grid-cols-2 tw-gap-10  tw-justify-around">
           <ForYou></ForYou>
         </div>
       </div>
@@ -71,7 +72,7 @@ function App() {
         <div className="tw-max-w-6xl tw-mx-auto tw-pt-5 sm: tw-px-3">
           <div className="tw-flex tw-justify-between">
             <div className="tw-text-2xl tw-font-medium tw-content-center">
-              <p>Khám từ xa</p>
+              <p>Bác sĩ nổi bật</p>
             </div>
             <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
               <button>Xem thêm</button>
