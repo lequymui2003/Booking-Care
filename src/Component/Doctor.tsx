@@ -1,5 +1,7 @@
 import ListDoctor from "../data/dataDoctor";
 import { Slide } from "react-slideshow-image";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 export class ItemDoctor {
   public img: string;
   public title: string;
@@ -12,6 +14,7 @@ export class ItemDoctor {
   }
 }
 function Doctor() {
+ 
   const listDoctor = ListDoctor as ItemDoctor[];
   return (
     <>
@@ -50,9 +53,13 @@ function Doctor() {
   );
 }
 export function ElementDoctor(props: { index: number; data: ItemDoctor }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/doctorPage");
+  };
   return (
-    <a key={props.index} href="">
-      <div className="tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-w-[252px]">
+    <div key={props.index} onClick={handleClick}>
+      <div className="tw-cursor-pointer tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-w-[252px]">
         <div className="tw-m-auto">
           <img
             src={props.data.img}
@@ -65,7 +72,7 @@ export function ElementDoctor(props: { index: number; data: ItemDoctor }) {
           <p className="tw-text-base tw-text-gray-400">{props.data.content}</p>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 export default Doctor;
