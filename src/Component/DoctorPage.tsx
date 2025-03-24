@@ -1,8 +1,13 @@
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 
 function DoctorPage() {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate("/booking");
+  };
   const [options, setOptions] = useState<string[]>([]);
 
   useEffect(() => {
@@ -168,6 +173,7 @@ function DoctorPage() {
                 {date.map((item, index) => (
                   <div
                     key={index}
+                    onClick={handleClick}
                     className="tw-text-sm tw-px-2 tw-py-3 tw-border tw-w-[100px] tw-bg-gray-200 tw-cursor-pointer hover:tw-bg-sky-600 hover:tw-text-white"
                   >
                     <div className="tw-flex tw-gap-1 tw-justify-center">
