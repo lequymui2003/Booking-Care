@@ -121,7 +121,7 @@ function Header() {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/appointmentScheduleDoctor");
+    navigate("/appointmentSchedule");
   };
 
   const toggleSidebar = () => {

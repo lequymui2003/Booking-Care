@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { Patient } from './model/Patient';
+import { Patient } from './model/patient';
 import { Appointment } from './model/appointment';
 import { Clinic } from './model/clinic';
-import { Doctor } from './model/Doctor';
+import { Doctor } from './model/doctor';
 import { DoctorTimeSlot } from './model/doctorTimeSlot';
 import { Notification } from './model/notification';
 import { Specialties } from './model/specialties';
@@ -16,14 +16,14 @@ export type SKDParams = {
   };
 
   const sdkParams = {} as SKDParams;
-  const baseUrl: string = "https://mct.finbox.vn/api";
+  const baseUrl: string = "http://192.168.1.100:3009/api";
   let headersData = { 'x-user-token': sdkParams.token};
   axios.defaults.headers.common['ngrok-skip-browser-warning'] = "any";
 
   const bkSDK ={
     getSummary: async () => {
         try {
-          const response = await axios.get(`http://103.1.239.244:3007/admin/products`, {headers: headersData});
+          const response = await axios.get(`http://192.168.1.100:3009/admin/products`, {headers: headersData});
           return response.data.data.products as any;
         } catch (error) {
           console.error("Error in getSummary:", error);
@@ -57,6 +57,7 @@ export type SKDParams = {
         try {
           const response = await axios.get(`${baseUrl}/doctors`,{ params: { condition, isMany }});
           const Doctors: Doctor[] = Object.values(response.data.data.doctor)
+          // console.log('Doctors array:', Doctors);
           return Doctors;
         } catch (error) {
           console.error("Error in getDoctor:", error);

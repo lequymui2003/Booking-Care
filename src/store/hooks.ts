@@ -33,7 +33,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [user, getUser];
   };
 
-  export const patient = ():[any, ()=> Promise<any>] => {
+  export const usePatient = ():[any, ()=> Promise<any>] => {
     const patient = useStoreState(state=>state.patient)
     const setPatient = useStoreActions(actions=>actions.setPatient);
     const getPatient = useCallback(async () => {
@@ -49,7 +49,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [patient, getPatient];
   };
 
-  export const doctor = ():[any, ()=> Promise<any>] => {
+  export const useDoctor = ():[any, ()=> Promise<any>] => {
     const doctor = useStoreState(state=>state.doctor)
     const setDoctor = useStoreActions(actions=>actions.setDoctor);
     const getDoctor = useCallback(async () => {
@@ -65,7 +65,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [doctor, getDoctor];
   };
 
-  export const appointment = ():[any, ()=> Promise<any>] => {
+  export const useAppointment = ():[any, ()=> Promise<any>] => {
     const appointment = useStoreState(state=>state.appointment)
     const setAppointment = useStoreActions(actions=>actions.setAppointment);
     const getAppointment = useCallback(async () => {
@@ -81,7 +81,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [appointment, getAppointment];
   };
 
-  export const clinic = ():[any, ()=> Promise<any>] => {
+  export const useClinic = ():[any, ()=> Promise<any>] => {
     const clinic = useStoreState(state=>state.clinic)
     const setClinic = useStoreActions(actions=>actions.setClinic);
     const getClinic = useCallback(async () => {
@@ -99,7 +99,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
 
 
   
-  export const doctorTimeSlot = ():[any, ()=> Promise<any>] => {
+  export const useDoctorTimeSlot = ():[any, ()=> Promise<any>] => {
     const doctorTimeSlot = useStoreState(state=>state.doctorTimeSlot)
     const setDoctorTimeSlot = useStoreActions(actions=>actions.setDoctorTimeSlot);
     const getDoctorTimeSlot = useCallback(async () => {
@@ -116,7 +116,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
   };
 
 
-  export const notification = ():[any, ()=> Promise<any>] => {
+  export const useNotification = ():[any, ()=> Promise<any>] => {
     const notification = useStoreState(state=>state.notification)
     const setNotification = useStoreActions(actions=>actions.setNotification);
     const getNotification = useCallback(async () => {
@@ -132,7 +132,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [notification, getNotification];
   };
 
-  export const specialties = ():[any, ()=> Promise<any>] => {
+  export const useSpecialties = ():[any, ()=> Promise<any>] => {
     const specialties = useStoreState(state=>state.specialties)
     const setSpecialties = useStoreActions(actions=>actions.setSpecialties);
     const getSpecialties = useCallback(async () => {
@@ -148,7 +148,7 @@ export const useUser = ():[User[], ()=> Promise<User[]>] => {
     return [specialties, getSpecialties];
   };
 
-  export const timeSlot = ():[any, ()=> Promise<any>] => {
+  export const useTimeSlot = ():[any, ()=> Promise<any>] => {
     const timeSlot = useStoreState(state=>state.timeSlot)
     const setTimeSlot = useStoreActions(actions=>actions.setTimeSlot);
     const getTimeSlot = useCallback(async () => {

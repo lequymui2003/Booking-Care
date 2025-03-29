@@ -1,14 +1,21 @@
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
-import { useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// import { useDoctor } from "../store/hooks";
 
-function DoctorPage() {
+export const DoctorPage = () => {
   const navigate = useNavigate();
+  const [options, setOptions] = useState<string[]>([]);
+  // const [doctor, getDoctor] = useDoctor();
+  // useEffect(() => {
+  //   console.log("Calling getDoctor...");
+  //   getDoctor();
+  // }, []);
+
   const handleClick = () => {
     navigate("/booking");
   };
-  const [options, setOptions] = useState<string[]>([]);
 
   useEffect(() => {
     // Tạo danh sách 6 ngày làm việc kể từ ngày hiện tại (chỉ lấy Thứ 2 - Thứ 6)
@@ -66,7 +73,7 @@ function DoctorPage() {
     setOptions(workDays);
 
     // Kiểm tra
-    console.log("Các ngày làm việc:", workDays);
+    // console.log("Các ngày làm việc:", workDays);
   }, []);
 
   const date = [
@@ -305,6 +312,4 @@ function DoctorPage() {
       <Footer />
     </>
   );
-}
-
-export default DoctorPage;
+};

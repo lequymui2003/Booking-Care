@@ -1,8 +1,8 @@
 import { action, Action, createStore } from 'easy-peasy';
-import { Patient } from './model/Patient';
+import { Patient } from './model/patient';
 import { Appointment } from './model/appointment';
 import { Clinic } from './model/clinic';
-import { Doctor } from './model/Doctor';
+import { Doctor } from './model/doctor';
 import { DoctorTimeSlot } from './model/doctorTimeSlot';
 import { Notification } from './model/notification';
 import { Specialties } from './model/specialties';

@@ -1,12 +1,41 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../store/hooks";
 
 function Login() {
   const navigate = useNavigate();
+  const [user, getUser] = useUser();
 
-  const handleClick = () => {
-    console.log("Navigating to /register");
-    navigate("/register");
+  // State để lưu giá trị từ các ô input
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  // Lấy dữ liệu user từ server
+  useEffect(() => {
+    getUser();
+  }, []);
+
+  // Xử lý khi nhấn nút "Đăng nhập"
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault(); // Ngăn chặn reload trang
+
+    // Kiểm tra thông tin đăng nhập
+    const foundUser = user.find(
+      (u: any) => u.email === email && u.password === password
+    );
+
+    if (foundUser) {
+      // Đăng nhập thành công
+      console.log("Đăng nhập thành công!");
+      localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
+      navigate("/"); // Chuyển hướng đến trang dashboard
+    } else {
+      // Đăng nhập thất bại
+      setError("Email hoặc mật khẩu không đúng!");
+    }
   };
+
   return (
     <div className="tw-relative tw-min-h-screen tw-bg-[#F5F5F5] tw-overflow-hidden">
       {/* Background Image */}
@@ -25,7 +54,7 @@ function Login() {
 
         {/* Chuyển sang trang đăng ký */}
         <div
-          onClick={handleClick}
+          onClick={() => navigate("/register")}
           className="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md tw-cursor-pointer"
         >
           Đăng ký
@@ -38,11 +67,16 @@ function Login() {
           <h2 className="tw-text-2xl tw-font-bold tw-mb-6 tw-text-center">
             Đăng nhập
           </h2>
-          <form>
+          {error && (
+            <p className="tw-text-red-500 tw-mb-4 tw-text-center">{error}</p>
+          )}
+          <form onSubmit={handleSubmit}>
             <div className="tw-mb-4">
               <input
                 type="text"
                 placeholder="Email hoặc số điện thoại"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
               />
             </div>
@@ -50,6 +84,8 @@ function Login() {
               <input
                 type="password"
                 placeholder="Mật khẩu"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
               />
             </div>
