@@ -28,7 +28,11 @@ function Login() {
     if (foundUser) {
       // Đăng nhập thành công
       console.log("Đăng nhập thành công!");
-      localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
+      // Tạo token ngẫu nhiên
+      const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      // localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
+      localStorage.setItem("token", token); // Lưu token vào localStorage
+      localStorage.setItem("userId", foundUser.id.toString()); // Lưu userId vào localStorage
       navigate("/"); // Chuyển hướng đến trang dashboard
     } else {
       // Đăng nhập thất bại

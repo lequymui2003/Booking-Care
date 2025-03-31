@@ -4,11 +4,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  // Kiểm tra trạng thái đăng nhập (ví dụ: kiểm tra token trong localStorage)
-  const isAuthenticated = !!localStorage.getItem("token");
+   // Lấy token từ localStorage
+   const token = localStorage.getItem("token");
 
   // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-  if (!isAuthenticated) {
+  if (!token) {
     return <Navigate to="/login" replace />;
   }
 

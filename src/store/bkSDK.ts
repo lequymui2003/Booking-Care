@@ -16,14 +16,14 @@ export type SKDParams = {
   };
 
   const sdkParams = {} as SKDParams;
-  const baseUrl: string = "http://192.168.1.100:3009/api";
+  const baseUrl: string = "https://elegant-lively-mosquito.ngrok-free.app/api";
   let headersData = { 'x-user-token': sdkParams.token};
   axios.defaults.headers.common['ngrok-skip-browser-warning'] = "any";
 
   const bkSDK ={
     getSummary: async () => {
         try {
-          const response = await axios.get(`http://192.168.1.100:3009/admin/products`, {headers: headersData});
+          const response = await axios.get(`https://elegant-lively-mosquito.ngrok-free.app/admin/products`, {headers: headersData});
           return response.data.data.products as any;
         } catch (error) {
           console.error("Error in getSummary:", error);

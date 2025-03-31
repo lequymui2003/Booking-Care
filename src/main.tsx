@@ -1,9 +1,9 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 // import App from "./App.tsx";
-import { RouterProvider } from "react-router-dom";
-import router from "./router/router.tsx";
+// import { RouterProvider } from "react-router-dom";
+// import router from "./router/router.tsx";
 import MainRouter from "./router/router.tsx";
 import React from "react";
 // Import StoreProvider và store

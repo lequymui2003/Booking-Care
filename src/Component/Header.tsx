@@ -10,7 +10,10 @@ interface LeftSidebarProps {
 function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
   const navigate = useNavigate();
 
-  // Navigation items for the sidebar
+  // Kiểm tra trạng thái đăng nhập
+  const isLoggedIn = !!localStorage.getItem("token");
+
+  // Navigation items cho người chưa đăng nhập
   const menuItems = [
     {
       title: "Trang chủ",
@@ -38,7 +41,7 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
     {
       title: "Lịch hẹn",
       icon: "far fa-calendar-alt",
-      path: "/appointmentScheduleDoctor",
+      path: "/appointmentSchedule",
     },
     {
       title: "Đăng nhập / đăng ký",
@@ -47,9 +50,28 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
     },
   ];
 
+  // Navigation items cho người đã đăng nhập
+  const menuItems2 = [
+    ...menuItems.slice(0, -1), // Sao chép tất cả mục trừ mục cuối cùng (Đăng nhập / đăng ký)
+    {
+      title: "Đăng xuất",
+      icon: "fas fa-sign-out-alt",
+      path: "/logout",
+    },
+  ];
+
+  // Xử lý khi nhấn vào mục menu
   const handleMenuItemClick = (path: string) => {
-    navigate(path);
-    onClose(); // Close sidebar after navigation
+    if (path === "/logout") {
+      // Xử lý đăng xuất
+      localStorage.removeItem("token"); // Xóa token khỏi localStorage
+      localStorage.removeItem("user"); // Xóa thông tin user nếu cần
+      localStorage.removeItem("userId"); // Xóa userId nếu cần
+      navigate("/login"); // Chuyển hướng về trang đăng nhập
+    } else {
+      navigate(path);
+    }
+    onClose(); // Đóng sidebar sau khi điều hướng
   };
 
   return (
@@ -64,12 +86,10 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
 
       {/* Sidebar */}
       <div
-        className={`
-          tw-fixed tw-top-0 tw-left-0 tw-h-full tw-w-64 tw-bg-white 
+        className={`tw-fixed tw-top-0 tw-left-0 tw-h-full tw-w-64 tw-bg-white 
           tw-transform tw-transition-transform tw-duration-300 tw-ease-in-out
           ${isOpen ? "tw-translate-x-0" : "tw-translate-x-[-100%]"}
-          tw-z-50 tw-shadow-lg
-        `}
+          tw-z-50 tw-shadow-lg`}
       >
         {/* Sidebar Header */}
         <div className="tw-flex tw-justify-between tw-items-center tw-p-4 tw-border-b">
@@ -89,7 +109,7 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
         {/* Menu Items */}
         <nav className="tw-py-4">
           <ul className="tw-flex tw-flex-col tw-gap-3">
-            {menuItems.map((item, index) => (
+            {(isLoggedIn ? menuItems2 : menuItems).map((item, index) => (
               <li
                 key={index}
                 className="tw-px-4 tw-py-2 tw-cursor-pointer tw-hover:bg-gray-100"

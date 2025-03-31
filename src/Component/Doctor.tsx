@@ -1,7 +1,6 @@
 import ListDoctor from "../data/dataDoctor";
 import { Slide } from "react-slideshow-image";
 import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 export class ItemDoctor {
   public img: string;
   public title: string;
