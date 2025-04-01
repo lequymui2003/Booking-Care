@@ -158,19 +158,19 @@ function Header() {
 
       {/*Header*/}
       <div className="tw-w-full tw-h-[78px] tw-bg-[rgb(237,255,250)]">
-        <div className="tw-flex xl:tw-gap-10 xl:tw-max-w-6xl tw-h-full xl:tw-mx-auto sm:tw-gap-3 sm:tw-max-w-2xl sm:tw-mx-auto md:tw-max-w-4xl md:tw-gap-20 lg:tw-gap-2 lg:tw-max-w-5xl tw-justify-between">
+        <div className="tw-flex xl:tw-gap-10 xl:tw-max-w-6xl tw-h-full xl:tw-mx-auto sm:tw-gap-3 sm:tw-max-w-2xl sm:tw-mx-auto md:tw-max-w-4xl  lg:tw-gap-2 lg:tw-max-w-5xl tw-justify-between">
           {/*Header left*/}
           <div className="sm:tw-pl-3 tw-flex tw-items-center tw-gap-4">
             <a onClick={toggleSidebar} className="tw-cursor-pointer">
               <img
-                src="./svg/icon_menu.svg"
+                src="/svg/icon_menu.svg"
                 alt=""
                 className="tw-w-[36px] tw-h-[36px]"
               />
             </a>
             <a href="/">
               <img
-                src="./svg/logo.svg"
+                src="/svg/logo.svg"
                 alt=""
                 className="tw-w-[200px] tw-h-[43px]"
               />
@@ -178,8 +178,8 @@ function Header() {
           </div>
           {/*Header middle*/}
           <div className="xl:tw-flex tw-gap-4 tw-items-center sm:tw-hidden md:tw-flex">
-            <div className="md:tw-hidden lg:tw-flex">
-              <ul className="tw-flex tw-gap-8">
+            <div className="tw-hidden md:tw-flex">
+              <ul className="tw-flex tw-gap-4 lg:tw-gap-8">
                 <li>
                   <a href="" className="tw-text-xs tw-font-semibold">
                     Chuyên khoa
@@ -209,7 +209,7 @@ function Header() {
               onClick={handleClick}
               className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-text tw-text-[rgb(69,195,210)] tw-cursor-pointer"
             >
-              <img src="./svg/LịchHẹn.svg" alt="" />
+              <img src="/svg/LịchHẹn.svg" alt="" />
               <p>Lịch Hẹn</p>
             </div>
           </div>

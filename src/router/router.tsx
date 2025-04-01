@@ -16,8 +16,7 @@ function MainRouter() {
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/doctorPage" element={<DoctorPage />} />
-
+        <Route path="/doctorPage/:id" element={<DoctorPage />} />
 
         {/* Các route yêu cầu đăng nhập */}
         <Route
@@ -35,7 +34,7 @@ function MainRouter() {
               <AppointmentSchedule />
             </ProtectedRoute>
           }
-        /> 
+        />
         <Route
           path="/appointmentScheduleDoctor"
           element={

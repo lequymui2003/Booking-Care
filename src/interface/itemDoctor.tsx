@@ -1,0 +1,60 @@
+export class ItemDoctor {
+  public id: number;
+  public specialtiesId: number;
+  public clinicId: number;
+  public use_id: number;
+  public fullName: string;
+  public sex: string;
+  public date: Date;
+  public email: string;
+  public phone: string;
+  public address: string;
+  public title: string;
+  public description: string;
+  public expertise: string;
+  public work_experience: string;
+  public education: string;
+  public image: string;
+  public examinationPrice: number;
+  public examinationAndTreatment: string;
+
+  constructor(
+    id: number,
+    specialtiesId: number,
+    clinicId: number,
+    use_id: number,
+    fullName: string,
+    sex: string,
+    date: Date,
+    email: string,
+    phone: string,
+    address: string,
+    title: string,
+    description: string,
+    expertise: string,
+    work_experience: string,
+    education: string,
+    image: string,
+    examinationPrice: number,
+    examinationAndTreatment: string,
+  ) {
+    this.id = id;
+    this.specialtiesId = specialtiesId;
+    this.clinicId = clinicId;
+    this.use_id = use_id;
+    this.fullName = fullName;
+    this.sex = sex;
+    this.date = date;
+    this.email = email;
+    this.phone = phone;
+    this.address = address;
+    this.title = title;
+    this.description = description;
+    this.expertise = expertise;
+    this.work_experience = work_experience;
+    this.education = education;
+    this.image = image;
+    this.examinationPrice = examinationPrice;
+    this.examinationAndTreatment = examinationAndTreatment;
+  }
+}

@@ -1,17 +1,50 @@
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-// import { useDoctor } from "../store/hooks";
+import { useState, useEffect, use } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDoctor, useSpecialties, useClinic } from "../store/hooks";
+import { ItemDoctor } from "../interface/itemDoctor";
+import { ItemSpecialty } from "../interface/itemSpecialty";
+import { ItemClinic } from "../interface/listClinic";
 
 export const DoctorPage = () => {
   const navigate = useNavigate();
   const [options, setOptions] = useState<string[]>([]);
-  // const [doctor, getDoctor] = useDoctor();
-  // useEffect(() => {
-  //   console.log("Calling getDoctor...");
-  //   getDoctor();
-  // }, []);
+  const { id } = useParams();
+  const [doctor, getDoctor] = useDoctor();
+  const [doctorDetails, setDoctorDetails] = useState<ItemDoctor | null>(null); // State để lưu thông tin bác sĩ
+  const [specialties, getSpecialties] = useSpecialties(); // Lấy danh sách chuyên khoa từ store
+  const [specialty, setSpecialty] = useState<ItemSpecialty | null>(null); // State để lưu thông tin chuyên khoa
+  const [clinic, getClinic] = useClinic(); // Lấy danh sách cơ sở y tế từ store
+  const [clinicDetails, setClinicDetails] = useState<ItemClinic | null>(null); // State để lưu thông tin cơ sở y tế
+
+  useEffect(() => {
+    getDoctor();
+    getSpecialties();
+    getClinic();
+  }, []);
+
+  // So sánh id từ URL với id của bác sĩ
+  useEffect(() => {
+    if (doctor && doctor.length > 0) {
+      const selectedDoctor = doctor.find(
+        (doc: ItemDoctor) => doc.id === parseInt(id!, 10) // So sánh id
+      );
+      setDoctorDetails(selectedDoctor || null); // Lưu thông tin bác sĩ vào state
+      if (selectedDoctor) {
+        const specialty = specialties?.find(
+          (spec: ItemSpecialty) => spec.id === selectedDoctor.specialtiesId
+        );
+        setSpecialty(specialty || null); // Lưu thông tin chuyên khoa vào state
+      }
+      if (selectedDoctor) {
+        const clinicDetails = clinic?.find(
+          (clinic: ItemClinic) => clinic.id === selectedDoctor.clinicId
+        );
+        setClinicDetails(clinicDetails || null); // Lưu thông tin cơ sở y tế vào state
+      }
+    }
+  }, [doctor, id]); // Chạy lại khi doctor hoặc id thay đổi
 
   const handleClick = () => {
     navigate("/booking");
@@ -114,18 +147,20 @@ export const DoctorPage = () => {
               <div>
                 <p>/</p>
               </div>
-              <div>Cơ xương khớp</div>
+              <div>{specialty?.specialtiesName}</div>
               <div className="tw-hidden md:tw-block">
                 <p>/</p>
               </div>
             </div>
-            <div className="tw-hidden md:tw-block">Tên bác sĩ</div>
+            <div className="tw-hidden md:tw-block">
+              {doctorDetails?.fullName}
+            </div>
           </div>
           <div className="tw-flex tw-flex-col md:tw-flex-row tw-gap-10 tw-w-full">
             <div className="tw-justify-items-center">
               <div className="tw-w-[140px] tw-h-[140px] md:tw-w-[140px] md:tw-h-[140px] tw-overflow-hidden tw-flex tw-items-center tw-justify-center tw-rounded-full">
                 <img
-                  src="./png/doctor1.png"
+                  src={doctorDetails?.image}
                   alt="Bác sĩ"
                   className="tw-w-full tw-h-full"
                 />
@@ -133,14 +168,15 @@ export const DoctorPage = () => {
             </div>
             <div className="md:tw-w-[550px] tw-flex tw-flex-col tw-gap-1">
               <div className="tw-text-2xl">
-                <p>PGS. TS. BSCKII. TTUT Vũ Văn Hòe</p>
+                <p>{doctorDetails?.fullName}</p>
               </div>
               <div>
                 <span className="tw-whitespace-pre-line tw-text-sm tw-text-[#555]">
-                  Bác sĩ có 35 năm kinh nghiệm về vực Cột sống, thần kinh, cơ
+                  {/* Bác sĩ có 35 năm kinh nghiệm về vực Cột sống, thần kinh, cơ
                   xương khớp <br />
                   Phó chủ tịch hội Phẫu thuật cột sống Việt Nam <br />
-                  Bác sĩ nhận khám từ 7 tuổi trở lên
+                  Bác sĩ nhận khám từ 7 tuổi trở lên */}
+                  {doctorDetails?.description}
                 </span>
               </div>
               <div className="tw-text-sm tw-flex tw-gap-1">
@@ -148,7 +184,7 @@ export const DoctorPage = () => {
                   <i className="fas fa-map-marker-alt"></i>
                 </div>
                 <div>
-                  <p>Hà Nội</p>
+                  <p>{doctorDetails?.address}</p>
                 </div>
               </div>
             </div>
@@ -211,13 +247,10 @@ export const DoctorPage = () => {
                   <p>ĐỊA CHỈ KHÁM</p>
                 </div>
                 <div className="tw-text-[13px] tw-text-sky-600 tw-cursor-pointer">
-                  <p>Phòng khám Đa khoa Mediplus</p>
+                  <p>{clinicDetails?.clinicName}</p>
                 </div>
                 <div className="tw-text-[13px] ">
-                  <p>
-                    Tầng 2, Trung tâm thương mại Mandarin Garden 2, 99 phố Tân
-                    Mai, Tân Mai, Hoàng Mai, Hà Nội
-                  </p>
+                  <p>{clinicDetails?.clinicAddress}</p>
                 </div>
               </div>
               <div className="tw-flex tw-gap-1">
@@ -225,7 +258,10 @@ export const DoctorPage = () => {
                   <p>GIÁ KHÁM:</p>
                 </div>
                 <div className="tw-text-sm tw-content-center">
-                  <p>500.000đ</p>
+                  <p>
+                    {doctorDetails?.examinationPrice.toLocaleString("vi-VN")}{" "}
+                    VNĐ
+                  </p>
                 </div>
               </div>
             </div>
@@ -234,22 +270,13 @@ export const DoctorPage = () => {
       </div>
       <hr className="tw-w-full tw-h-[1px] tw-bg-slate-800" />
       <div className="tw-w-full tw-h-full tw-bg-slate-100 tw-py-8">
-        <div className="tw-max-w-6xl tw-mx-auto">
+        <div className="lg:tw-w-1/2 lg:tw-ml-28">
           <div>
             <div className="tw-px-4 tw-text-base tw-font-bold">
-              <p>Tiến sĩ, Bác sĩ chuyên khoa II Lê Quốc Việt</p>
+              <p>{doctorDetails?.fullName}</p>
             </div>
             <div className="tw-px-4">
-              <ul className="tw-list-disc tw-pl-8 tw-text-sm">
-                <li>
-                  20 năm kinh nghiệm trong khám và điều trị bệnh lý về Nội Thần
-                  kinh
-                </li>
-                <li>
-                  Từng công tác nhiều năm tại khoa Nội Thần kinh, Bệnh viện Nhân
-                  dân 115
-                </li>
-              </ul>
+              <p className="tw-pl-8 tw-text-sm">{doctorDetails?.description}</p>
             </div>
           </div>
           <div>
@@ -257,20 +284,9 @@ export const DoctorPage = () => {
               <p>Khám và điều trị</p>
             </div>
             <div className="tw-px-4">
-              <ul className="tw-list-disc tw-pl-8 tw-text-sm">
-                <li>
-                  Tầm soát, phòng ngừa hoặc điều trị Tai biến mạch máu não (Đột
-                  qụy)
-                </li>
-                <li>
-                  Điều trị đau đầu cấp tính và mạn tính do nhồi máu não, u não,
-                  u màng não, chảy máu não
-                </li>
-                <li>
-                  Điều trị các bệnh đau đầu: Chứng đau nửa đầu, đau đầu căn
-                  nguyên mạch máu, đau đầu mạn tính
-                </li>
-              </ul>
+              <p className="tw-pl-8 tw-text-sm">
+                {doctorDetails?.examinationAndTreatment}
+              </p>
             </div>
           </div>
           <div>
@@ -278,16 +294,9 @@ export const DoctorPage = () => {
               <p>Quá trình công tác</p>
             </div>
             <div className="tw-px-4">
-              <ul className="tw-list-disc tw-pl-8 tw-text-sm">
-                <li>
-                  Hiện là Bác sĩ Nội Thần kinh, Bệnh viện Quốc tế City (2016 -
-                  Nay)
-                </li>
-                <li>
-                  Bác sĩ điều trị khoa Nội Thần kinh, Bệnh viện Nhân dân 115
-                  (2005 - 2016)
-                </li>
-              </ul>
+              <p className="tw-pl-8 tw-text-sm">
+                {doctorDetails?.work_experience}
+              </p>
             </div>
           </div>
           <div>
@@ -295,16 +304,7 @@ export const DoctorPage = () => {
               <p>Quá trình đào tạo</p>
             </div>
             <div className="tw-px-4">
-              <ul className="tw-list-disc tw-pl-8 tw-text-sm">
-                <li>
-                  Tốt nghiệp Thạc sĩ chuyên ngành Thần kinh, Đại học Y dược TP.
-                  HCM (2013)
-                </li>
-                <li>
-                  Tốt nghiệp Bác sĩ Đa khoa, Đại học Y khoa Phạm Ngọc Thạch
-                  (2002)
-                </li>
-              </ul>
+              <p className="tw-pl-8 tw-text-sm">{doctorDetails?.education}</p>
             </div>
           </div>
         </div>

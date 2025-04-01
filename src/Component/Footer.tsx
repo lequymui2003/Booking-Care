@@ -34,14 +34,14 @@ function Footer() {
               Tòa nhà H3, 384 Hoàng Diệu, Phường 6, Quận 4, TP.HCM
             </p>
             <div className="tw-flex tw-gap-2">
-              <img src="./svg/Bộ công thương.svg" alt="" className="tw-w-24" />
-              <img src="./svg/Bộ công thương.svg" alt="" className="tw-w-24" />
+              <img src="/svg/Bộ công thương.svg" alt="" className="tw-w-24" />
+              <img src="/svg/Bộ công thương.svg" alt="" className="tw-w-24" />
             </div>
           </div>
           <div className="tw-flex tw-flex-col tw-gap-2">
             <div>
               <a href="">
-                <img src="./svg/logo.svg" alt="" className="tw-w-36" />
+                <img src="/svg/logo.svg" alt="" className="tw-w-36" />
               </a>
             </div>
             <div className="tw-text-blue-400 tw-flex tw-flex-col tw-gap-3">
@@ -78,7 +78,7 @@ function Footer() {
             <div className="tw-flex tw-flex-row tw-gap-2">
               <div className="tw-content-center">
                 <img
-                  src="./png/hellodoctorlogo.png"
+                  src="/png/hellodoctorlogo.png"
                   alt=""
                   className="tw-w-16 "
                 />
@@ -90,7 +90,7 @@ function Footer() {
             </div>
             <div className="tw-flex tw-flex-row tw-gap-2">
               <div className="tw-content-center">
-                <img src="./png/logobernard.png" alt="" className="tw-w-16" />
+                <img src="/png/logobernard.png" alt="" className="tw-w-16" />
               </div>
               <div className="tw-text-sm">
                 <p className="tw-font-medium">
@@ -102,7 +102,7 @@ function Footer() {
             <div className="tw-flex tw-flex-row tw-gap-2">
               <div className="tw-content-center">
                 <img
-                  src="./png/logo-doctor-check.png"
+                  src="/png/logo-doctor-check.png"
                   alt=""
                   className="tw-w-16"
                 />
@@ -140,13 +140,13 @@ function Footer() {
             </div>
             <div className="tw-mt-2 tw-flex tw-gap-3">
               <div>
-                <img src="./svg/logo-tiktok.svg" alt="" />
+                <img src="/svg/logo-tiktok.svg" alt="" />
               </div>
               <div>
-                <img src="./svg/logo-facebook.svg" alt="" />
+                <img src="/svg/logo-facebook.svg" alt="" />
               </div>
               <div>
-                <img src="./svg/logo-youtube.svg" alt="" />
+                <img src="/svg/logo-youtube.svg" alt="" />
               </div>
             </div>
           </div>

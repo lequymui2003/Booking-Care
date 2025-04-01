@@ -1,5 +1,7 @@
 import { Slide } from "react-slideshow-image";
 import ListDataSpecialty from "../data/dataSpecialty";
+import { useState, useEffect } from "react";
+import { useSpecialties } from "../store/hooks";
 export class ItemSpecialty {
   public img: string;
   public title: string;
@@ -12,7 +14,19 @@ export class ItemSpecialty {
 
 function Specialty() {
   const listSpecialty = ListDataSpecialty as ItemSpecialty[];
-  console.log("ListDataSpecialty:", listSpecialty);
+  const [specialty, getSpecialty] = useSpecialties();
+  const [specialtyList, setSpecialtyList] = useState<any[]>([]); // State để lưu giá trị của specialty
+  useEffect(() => {
+    getSpecialty();
+  }, []);
+  useEffect(() =>{
+    setSpecialtyList(specialty); // Gán giá trị của specialty vào state specialtyList
+  },[specialtyList])
+  useEffect(() => {
+    console.log("specialtyList", specialtyList);
+  }, []);
+
+
   return (
     <>
       {/* Chuyên khoa*/}
