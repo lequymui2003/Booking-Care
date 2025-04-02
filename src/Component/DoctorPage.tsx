@@ -1,11 +1,19 @@
 import Header from "../Component/Header";
 import Footer from "../Component/Footer";
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useDoctor, useSpecialties, useClinic } from "../store/hooks";
+import {
+  useDoctor,
+  useSpecialties,
+  useClinic,
+  useDoctorTimeSlot,
+  useTimeSlot,
+} from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemSpecialty } from "../interface/itemSpecialty";
 import { ItemClinic } from "../interface/listClinic";
+import { ItemDoctorTimeSlot } from "../interface/itemDoctorTimeSlot";
+import { ItemTimeSlot } from "../interface/itemTimeSlot";
 
 export const DoctorPage = () => {
   const navigate = useNavigate();
@@ -17,11 +25,20 @@ export const DoctorPage = () => {
   const [specialty, setSpecialty] = useState<ItemSpecialty | null>(null); // State để lưu thông tin chuyên khoa
   const [clinic, getClinic] = useClinic(); // Lấy danh sách cơ sở y tế từ store
   const [clinicDetails, setClinicDetails] = useState<ItemClinic | null>(null); // State để lưu thông tin cơ sở y tế
+  const [doctorTimeSlots, getDoctorTimeSlot] = useDoctorTimeSlot();
+  const [timeSlots, getTimeSlot] = useTimeSlot();
+
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [availableTimes, setAvailableTimes] = useState<
+    { startTime: string; endTime: string }[]
+  >([]);
 
   useEffect(() => {
     getDoctor();
     getSpecialties();
     getClinic();
+    getDoctorTimeSlot();
+    getTimeSlot();
   }, []);
 
   // So sánh id từ URL với id của bác sĩ
@@ -109,24 +126,97 @@ export const DoctorPage = () => {
     // console.log("Các ngày làm việc:", workDays);
   }, []);
 
-  const date = [
-    {
-      firstTime: "10:30",
-      secondTime: "11:00",
-    },
-    {
-      firstTime: "11:00",
-      secondTime: "11:30",
-    },
-    {
-      firstTime: "13:00",
-      secondTime: "13:30",
-    },
-    {
-      firstTime: "14:00",
-      secondTime: "14:30",
-    },
-  ];
+  // Cập nhật hàm convertToMMDDYYYY để xử lý đúng định dạng "Thứ X - dd/mm/yyyy"
+  const convertToMMDDYYYY = (dateString: string) => {
+    // Nếu chuỗi đầu vào có định dạng "Thứ X - dd/mm/yyyy"
+    if (dateString.includes(" - ")) {
+      // Tách lấy phần ngày tháng sau dấu " - "
+      const datePart = dateString.split(" - ")[1];
+      // Tách ngày, tháng, năm
+      const parts = datePart.split("/");
+      if (parts.length !== 3) return "";
+      return `${parts[1]}/${parts[0]}/${parts[2]}`; // Chuyển sang mm/dd/yyyy
+    }
+    // Nếu đầu vào đã là dd/mm/yyyy
+    else {
+      const parts = dateString.split("/");
+      if (parts.length !== 3) return "";
+      return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    }
+  };
+
+  useEffect(() => {
+    if (!id || !doctorTimeSlots || !timeSlots || !selectedDate) return;
+
+    // Tạo một hàm chuẩn hóa định dạng ngày để so sánh
+    const normalizeDate = (dateStr: string) => {
+      // Tách thành mm, dd, yyyy (bỏ qua số 0 đứng trước)
+      const parts = dateStr.split("/");
+      if (parts.length !== 3) return "";
+      // Chuyển sang số nguyên để loại bỏ số 0 đứng trước
+      const month = parseInt(parts[0], 10);
+      const day = parseInt(parts[1], 10);
+      const year = parts[2];
+      // Trả về định dạng chuẩn hóa
+      return `${month}/${day}/${year}`;
+    };
+
+    // Xử lý selected date
+    const formattedSelectedDate = convertToMMDDYYYY(selectedDate);
+    const normalizedSelectedDate = normalizeDate(formattedSelectedDate);
+
+    console.log("Selected Date:", selectedDate);
+    console.log("Normalized Selected Date:", normalizedSelectedDate);
+
+    // Lọc các doctorTimeSlots theo ngày đã chọn
+    const doctorTimeSlotsFiltered = doctorTimeSlots.filter(
+      (slot: ItemDoctorTimeSlot) => {
+        // Chuyển đổi ngày của slot
+        const slotDateObj = new Date(slot.doctorTimeSlot_Date);
+        const month = slotDateObj.getMonth() + 1;
+        const day = slotDateObj.getDate();
+        const year = slotDateObj.getFullYear();
+
+        // Định dạng nhất quán không có số 0 đứng trước
+        const normalizedSlotDate = `${month}/${day}/${year}`;
+
+        return (
+          slot.doctor_id === parseInt(id) &&
+          normalizedSlotDate === normalizedSelectedDate
+        );
+      }
+    );
+
+    console.log("Filtered Doctor Time Slots:", doctorTimeSlotsFiltered);
+
+    // Tạo một mảng chứa cả thông tin timeSlot và timeSlot_id để sắp xếp
+    const timesWithId = doctorTimeSlotsFiltered
+      .map((slot: ItemDoctorTimeSlot) => {
+        const foundTimeSlot = timeSlots.find(
+          (time: ItemTimeSlot) => time.id === slot.timeSlot_id
+        );
+        if (foundTimeSlot) {
+          return {
+            ...foundTimeSlot,
+            timeSlot_id: slot.timeSlot_id,
+          };
+        }
+        return null;
+      })
+      .filter((item: ItemTimeSlot) => item !== null);
+
+    // Sắp xếp theo timeSlot_id (giả sử id nhỏ hơn tương ứng với thời gian sớm hơn)
+    timesWithId.sort((a: any, b: any) => a.timeSlot_id - b.timeSlot_id);
+
+    // Sau khi sắp xếp, chỉ lấy thông tin cần thiết
+    const sortedTimes = timesWithId.map((item: ItemTimeSlot) => ({
+      startTime: item.startTime,
+      endTime: item.endTime,
+    }));
+
+    console.log("Available Times (sorted):", sortedTimes);
+    setAvailableTimes(sortedTimes);
+  }, [selectedDate, doctorTimeSlots, timeSlots, id]);
 
   return (
     <>
@@ -193,7 +283,10 @@ export const DoctorPage = () => {
             <div className="tw-flex tw-flex-col tw-gap-2 tw-w-full md:tw-w-1/2 md:tw-border-r-2 md:tw-border-b-0 tw-border-b-2">
               <div>
                 {options.length > 0 ? (
-                  <select className="tw-text-sky-600 tw-text-sm tw-p-2 tw-border-0 tw-border-b-2 tw-border-gray-300 tw-rounded-none tw-outline-none tw-bg-transparent focus:tw-outline-none focus:tw-ring-0 focus:tw-border-blue-500 hover:tw-border-gray-400">
+                  <select
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="tw-text-sky-600 tw-text-sm tw-p-2 tw-border-0 tw-border-b-2 tw-border-gray-300 tw-rounded-none tw-outline-none tw-bg-transparent focus:tw-outline-none focus:tw-ring-0 focus:tw-border-blue-500 hover:tw-border-gray-400"
+                  >
                     {options.map((option, index) => (
                       <option key={index} value={option}>
                         {option}
@@ -213,19 +306,23 @@ export const DoctorPage = () => {
                 </div>
               </div>
               <div className="tw-flex tw-gap-2 tw-flex-wrap">
-                {date.map((item, index) => (
-                  <div
-                    key={index}
-                    onClick={handleClick}
-                    className="tw-text-sm tw-px-2 tw-py-3 tw-border tw-w-[100px] tw-bg-gray-200 tw-cursor-pointer hover:tw-bg-sky-600 hover:tw-text-white"
-                  >
-                    <div className="tw-flex tw-gap-1 tw-justify-center">
-                      <p>{item.firstTime}</p>
-                      <p>-</p>
-                      <p>{item.secondTime}</p>
+                {availableTimes.length > 0 ? (
+                  availableTimes.map((item, index) => (
+                    <div
+                      key={index}
+                      onClick={handleClick}
+                      className="tw-text-sm tw-px-2 tw-py-3 tw-border tw-w-[100px] tw-bg-gray-200 tw-cursor-pointer hover:tw-bg-sky-600 hover:tw-text-white"
+                    >
+                      <div className="tw-flex tw-gap-1 tw-justify-center">
+                        <p>{item.startTime}</p>
+                        <p>-</p>
+                        <p>{item.endTime}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <p>Không có lịch khám</p>
+                )}
               </div>
               <div className="tw-flex tw-gap-1 tw-text-[12px] tw-text-gray-800 tw-py-3 md:tw-py-0">
                 <div>
