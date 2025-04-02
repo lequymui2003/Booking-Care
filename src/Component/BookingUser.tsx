@@ -1,11 +1,17 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import { ItemPatient } from "../interface/itemPatient";
 import { useState, useEffect } from "react";
-import { useDoctor } from "../store/hooks";
-// import { ItemDoctor } from "../interface/itemDoctor";
+import { useDoctor, usePatient } from "../store/hooks";
+import { ItemDoctor } from "../interface/itemDoctor";
 
 function BookingUser() {
   const [doctor, getDoctor] = useDoctor();
+  const userId = localStorage.getItem("userId"); // Lấy id từ localStorage
+  const [patients, getPatients] = usePatient();
+  const [currentPatient, setCurrentPatient] = useState<ItemPatient | null>(
+    null
+  );
   const [bookingData, setBookingData] = useState({
     doctorId: "",
     doctorName: "",
@@ -22,17 +28,26 @@ function BookingUser() {
 
   useEffect(() => {
     getDoctor();
-  }, []);
-  useEffect(() => {
-    console.log(doctor);
+    getPatients();
   }, []);
 
-  // useEffect(() => {
-  //   // const storedData = localStorage.getItem("bookingData");
-  //   // if (storedData) {
-  //   //   setBookingData(JSON.parse(storedData));
-  //   // }
-  // },[]);
+  // Thêm useEffect để lọc thông tin patient
+  useEffect(() => {
+    if (userId && patients) {
+      // Tìm patient có user_id trùng khớp với userId từ localStorage
+      const foundPatient = patients.find(
+        (patient: ItemPatient) => patient.use_id === Number(userId)
+      );
+
+      if (foundPatient) {
+        setCurrentPatient(foundPatient);
+        console.log("Found patient:", foundPatient);
+      } else {
+        console.warn("No patient found with user_id:", userId);
+      }
+    }
+  }, [patients, userId]);
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
@@ -56,7 +71,8 @@ function BookingUser() {
     if (doctor && doctor.length > 0 && bookingData.doctorId) {
       // Kiểm tra kiểu dữ liệu và ép kiểu nếu cần thiết
       const foundDoctor = doctor.find(
-        (doc: any) => doc.id.toString() === bookingData.doctorId.toString() // So sánh bằng cách ép kiểu về chuỗi
+        (doc: ItemDoctor) =>
+          doc.id.toString() === bookingData.doctorId.toString() // So sánh bằng cách ép kiểu về chuỗi
       );
 
       if (foundDoctor) {
@@ -69,6 +85,16 @@ function BookingUser() {
       }
     }
   }, [doctor, bookingData.doctorId]); // Theo dõi sự thay đổi của doctor và doctorId
+
+  // Hàm chuyển đổi ngày tháng không bị ảnh hưởng bởi timezone
+  const formatDateForInput = (dateString: string) => {
+    const [month, day, year] = dateString.split("/");
+    // Tạo Date object với múi giờ UTC
+    const date = new Date(
+      Date.UTC(Number(year), Number(month) - 1, Number(day))
+    );
+    return date.toISOString().split("T")[0];
+  };
 
   return (
     <>
@@ -125,9 +151,9 @@ function BookingUser() {
             </div>
           </div>
         </div>
-
         <div className="tw-max-w-6xl tw-mx-auto tw-h-full tw-flex tw-justify-center tw-content-center tw-py-3 tw-px-3">
           <div className="tw-flex tw-flex-col tw-gap-3 tw-w-[400px] md:tw-w-[500px]">
+            {/*input tên */}
             <div>
               <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-text-sm focus-within:tw-border-blue-500">
                 <i className="fa-solid fa-user tw-text-gray-500"></i>
@@ -135,6 +161,7 @@ function BookingUser() {
                   type="text"
                   placeholder="Họ tên bệnh nhân (Bắt buộc)"
                   className="tw-w-full focus:tw-outline-none"
+                  value={currentPatient?.fullName}
                 />
               </div>
               <div className="tw-text-[13px] tw-text-gray-400">
@@ -144,11 +171,13 @@ function BookingUser() {
                 </p>
               </div>
             </div>
+            {/*input giới tính */}
             <div className="tw-flex tw-items-center tw-space-x-6">
               <label className="tw-flex tw-items-center tw-space-x-2">
                 <input
                   type="radio"
                   name="gender"
+                  checked={currentPatient?.sex === "Nam"}
                   className="tw-w-[14px] tw-h-[14px] tw-text-blue-600 tw-border-gray-300"
                 />
                 <span>Nam</span>
@@ -158,11 +187,13 @@ function BookingUser() {
                 <input
                   type="radio"
                   name="gender"
+                  checked={currentPatient?.sex === "Nữ"}
                   className="tw-w-[14px] tw-h-[14px] tw-text-pink-600 tw-border-gray-300"
                 />
                 <span>Nữ</span>
               </label>
             </div>
+            {/*input SĐT */}
             <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-text-sm focus-within:tw-border-blue-500">
               <i className="fas fa-mobile-alt tw-text-gray-500"></i>
               <input
@@ -171,31 +202,50 @@ function BookingUser() {
                 className="tw-w-full focus:tw-outline-none peer"
                 pattern="[0-9]*"
                 inputMode="numeric"
+                value={currentPatient?.phone}
               />
             </div>
+            {/*input email */}
             <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-text-sm focus-within:tw-border-blue-500">
               <i className="fas fa-envelope tw-text-gray-500"></i>
               <input
                 type="email"
                 placeholder="Địa chỉ Email"
                 className="tw-w-full focus:tw-outline-none"
+                value={currentPatient?.email}
               />
             </div>
+            {/*input ngày sinh */}
             <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg  tw-text-sm focus-within:tw-border-blue-500">
               <input
                 type="date"
                 className="tw-w-full focus:tw-outline-none"
-                max={new Date().toISOString().split("T")[0]} // Chặn ngày tương lai
+                max={new Date().toISOString().split("T")[0]}
+                value={
+                  currentPatient?.date
+                    ? formatDateForInput(currentPatient.date.toString())
+                    : ""
+                }
+                readOnly
+                aria-label="Ngày sinh"
               />
+              {!currentPatient?.date && (
+                <div className="tw-text-red-500 tw-text-xs tw-mt-1">
+                  * Chưa cập nhật ngày sinh
+                </div>
+              )}
             </div>
+            {/*input địa chỉ */}
             <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-items-center tw-gap-2 tw-text-sm focus-within:tw-border-blue-500">
               <i className="fas fa-map-marker-alt tw-text-gray-500"></i>
               <input
                 type="text"
                 placeholder="Địa chỉ"
                 className="tw-w-full focus:tw-outline-none"
+                value={currentPatient?.address}
               />
             </div>
+            {/*input lý do khám */}
             <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-flex tw-gap-2  tw-text-sm focus-within:tw-border-blue-500">
               <i className="fas fa-plus-square tw-text-gray-500 tw-mt-1"></i>
               <textarea
