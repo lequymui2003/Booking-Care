@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from "../App";
+import ScrollToTop from "./ScrollToTop";
 import { DoctorPage } from "../Component/DoctorPage"; // Đường dẫn đúng với file DoctorPage.tsx
 import BookingUser from "../Component/BookingUser";
 import AppointmentSchedule from "../Component/AppointmentSchedule";
@@ -11,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
 function MainRouter() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Route không yêu cầu đăng nhập */}
         <Route path="/" element={<App />} />

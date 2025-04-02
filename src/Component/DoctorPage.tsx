@@ -8,12 +8,14 @@ import {
   useClinic,
   useDoctorTimeSlot,
   useTimeSlot,
+  useAppointment,
 } from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemSpecialty } from "../interface/itemSpecialty";
 import { ItemClinic } from "../interface/listClinic";
 import { ItemDoctorTimeSlot } from "../interface/itemDoctorTimeSlot";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
+import { ItemAppointment } from "../interface/itemAppointment";
 
 export const DoctorPage = () => {
   const navigate = useNavigate();
@@ -33,15 +35,18 @@ export const DoctorPage = () => {
     { startTime: string; endTime: string }[]
   >([]);
 
+  const [appointments, getAppointments] = useAppointment();
+
   useEffect(() => {
     getDoctor();
     getSpecialties();
     getClinic();
     getDoctorTimeSlot();
     getTimeSlot();
+    getAppointments();
   }, []);
 
-  // So sánh id từ URL với id của bác sĩ
+  // Lấy ra thông tin của bác sĩ
   useEffect(() => {
     if (doctor && doctor.length > 0) {
       const selectedDoctor = doctor.find(
@@ -63,6 +68,7 @@ export const DoctorPage = () => {
     }
   }, [doctor, id]); // Chạy lại khi doctor hoặc id thay đổi
 
+  // tạo các option thứ - ngày để hiển thị trên select option
   useEffect(() => {
     // Tạo danh sách 6 ngày làm việc kể từ ngày hiện tại (chỉ lấy Thứ 2 - Thứ 6)
     const generateWorkDays = () => {
@@ -142,77 +148,87 @@ export const DoctorPage = () => {
   };
 
   useEffect(() => {
-    if (!id || !doctorTimeSlots || !timeSlots || !selectedDate) return;
+    if (!id || !doctorTimeSlots || !timeSlots || !selectedDate || !appointments)
+      return;
 
-    // Tạo một hàm chuẩn hóa định dạng ngày để so sánh
-    const normalizeDate = (dateStr: string) => {
-      // Tách thành mm, dd, yyyy (bỏ qua số 0 đứng trước)
-      const parts = dateStr.split("/");
-      if (parts.length !== 3) return "";
-      // Chuyển sang số nguyên để loại bỏ số 0 đứng trước
-      const month = parseInt(parts[0], 10);
-      const day = parseInt(parts[1], 10);
-      const year = parts[2];
-      // Trả về định dạng chuẩn hóa
+    // Hàm chuẩn hóa ngày tháng
+    const normalizeDate = (dateInput: string | Date): string => {
+      let dateObj: Date;
+
+      if (dateInput instanceof Date) {
+        dateObj = dateInput;
+      } else {
+        // Xử lý chuỗi có định dạng "Thứ X - dd/mm/yyyy"
+        if (dateInput.includes(" - ")) {
+          const datePart = dateInput.split(" - ")[1];
+          const [day, month, year] = datePart.split("/").map(Number);
+          dateObj = new Date(year, month - 1, day);
+        } else {
+          // Thử parse theo ISO hoặc dd/mm/yyyy
+          dateObj = new Date(dateInput);
+          if (isNaN(dateObj.getTime())) {
+            const [day, month, year] = dateInput.split("/").map(Number);
+            dateObj = new Date(year, month - 1, day);
+          }
+        }
+      }
+
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
       return `${month}/${day}/${year}`;
     };
 
-    // Xử lý selected date
+    // Chuẩn hóa ngày được chọn
     const formattedSelectedDate = convertToMMDDYYYY(selectedDate);
     const normalizedSelectedDate = normalizeDate(formattedSelectedDate);
 
-    console.log("Selected Date:", selectedDate);
-    console.log("Normalized Selected Date:", normalizedSelectedDate);
-
-    // Lọc các doctorTimeSlots theo ngày đã chọn
+    // Lọc các slot theo doctor, ngày và chưa được đặt
     const doctorTimeSlotsFiltered = doctorTimeSlots.filter(
       (slot: ItemDoctorTimeSlot) => {
-        // Chuyển đổi ngày của slot
-        const slotDateObj = new Date(slot.doctorTimeSlot_Date);
-        const month = slotDateObj.getMonth() + 1;
-        const day = slotDateObj.getDate();
-        const year = slotDateObj.getFullYear();
+        // Kiểm tra doctor_id và ngày
+        const slotDateNormalized = normalizeDate(slot.doctorTimeSlot_Date);
+        if (
+          slot.doctor_id !== parseInt(id) ||
+          slotDateNormalized !== normalizedSelectedDate
+        )
+          return false;
 
-        // Định dạng nhất quán không có số 0 đứng trước
-        const normalizedSlotDate = `${month}/${day}/${year}`;
+        // Kiểm tra slot đã được đặt chưa
+        const isBooked = appointments.some((appt: ItemAppointment) => {
+          const apptDateNormalized = normalizeDate(appt.appointmentDate);
+          return (
+            appt.doctorId === parseInt(id) &&
+            appt.timeSlotId === slot.timeSlot_id &&
+            apptDateNormalized === slotDateNormalized
+          );
+        });
 
-        return (
-          slot.doctor_id === parseInt(id) &&
-          normalizedSlotDate === normalizedSelectedDate
-        );
+        return isBooked;
       }
     );
 
-    console.log("Filtered Doctor Time Slots:", doctorTimeSlotsFiltered);
-
-    // Tạo một mảng chứa cả thông tin timeSlot và timeSlot_id để sắp xếp
+    // ... phần còn lại giữ nguyên
     const timesWithId = doctorTimeSlotsFiltered
       .map((slot: ItemDoctorTimeSlot) => {
         const foundTimeSlot = timeSlots.find(
           (time: ItemTimeSlot) => time.id === slot.timeSlot_id
         );
-        if (foundTimeSlot) {
-          return {
-            ...foundTimeSlot,
-            timeSlot_id: slot.timeSlot_id,
-          };
-        }
-        return null;
+        return foundTimeSlot
+          ? { ...foundTimeSlot, timeSlot_id: slot.timeSlot_id }
+          : null;
       })
-      .filter((item: ItemTimeSlot) => item !== null);
+      .filter(Boolean);
 
-    // Sắp xếp theo timeSlot_id (giả sử id nhỏ hơn tương ứng với thời gian sớm hơn)
     timesWithId.sort((a: any, b: any) => a.timeSlot_id - b.timeSlot_id);
-
-    // Sau khi sắp xếp, chỉ lấy thông tin cần thiết
     const sortedTimes = timesWithId.map((item: ItemTimeSlot) => ({
       startTime: item.startTime,
       endTime: item.endTime,
     }));
 
-    console.log("Available Times (sorted):", sortedTimes);
     setAvailableTimes(sortedTimes);
-  }, [selectedDate, doctorTimeSlots, timeSlots, id]);
+  }, [selectedDate, doctorTimeSlots, timeSlots, id, appointments]);
 
   const handleTimeSlotClick = (timeSlot: {
     startTime: string;
@@ -234,7 +250,6 @@ export const DoctorPage = () => {
     };
 
     // Có hai cách để lưu trữ và truyền dữ liệu:
-
     // Cách 1: Sử dụng localStorage (phù hợp cho dữ liệu không nhạy cảm)
     // localStorage.setItem("bookingData", JSON.stringify(bookingData));
     //navigate("/booking");
