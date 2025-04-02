@@ -1,8 +1,11 @@
 import Header from "./Header";
 import Footer from "./Footer";
 import { useState, useEffect } from "react";
+import { useDoctor } from "../store/hooks";
+// import { ItemDoctor } from "../interface/itemDoctor";
 
 function BookingUser() {
+  const [doctor, getDoctor] = useDoctor();
   const [bookingData, setBookingData] = useState({
     doctorId: "",
     doctorName: "",
@@ -18,11 +21,54 @@ function BookingUser() {
   });
 
   useEffect(() => {
-    const storedData = localStorage.getItem("bookingData");
-    if (storedData) {
-      setBookingData(JSON.parse(storedData));
-    }
+    getDoctor();
   }, []);
+  useEffect(() => {
+    console.log(doctor);
+  }, []);
+
+  // useEffect(() => {
+  //   // const storedData = localStorage.getItem("bookingData");
+  //   // if (storedData) {
+  //   //   setBookingData(JSON.parse(storedData));
+  //   // }
+  // },[]);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+
+    setBookingData((prevState) => ({
+      ...prevState,
+      doctorId: params.get("doctorId") || "",
+      doctorName: params.get("doctorName") || "",
+      clinicName: params.get("clinicName") || "",
+      specialtyName: params.get("specialtyName") || "",
+      examinationPrice: parseInt(params.get("examinationPrice") || "0"),
+      selectedDate: params.get("selectedDate") || "",
+      timeSlot: {
+        startTime: params.get("startTime") || "",
+        endTime: params.get("endTime") || "",
+      },
+    }));
+  }, [location.search]);
+
+  // Cập nhật ảnh bác sĩ khi có dữ liệu bác sĩ
+  useEffect(() => {
+    if (doctor && doctor.length > 0 && bookingData.doctorId) {
+      // Kiểm tra kiểu dữ liệu và ép kiểu nếu cần thiết
+      const foundDoctor = doctor.find(
+        (doc: any) => doc.id.toString() === bookingData.doctorId.toString() // So sánh bằng cách ép kiểu về chuỗi
+      );
+
+      if (foundDoctor) {
+        setBookingData((prevState) => ({
+          ...prevState,
+          doctorImage: foundDoctor.image || "", // Lấy ảnh từ dữ liệu bác sĩ
+        }));
+      } else {
+        console.log("No matching doctor found.");
+      }
+    }
+  }, [doctor, bookingData.doctorId]); // Theo dõi sự thay đổi của doctor và doctorId
 
   return (
     <>

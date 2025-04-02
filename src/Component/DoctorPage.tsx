@@ -220,13 +220,13 @@ export const DoctorPage = () => {
   }) => {
     // Thu thập các thông tin cần thiết
     const bookingData = {
-      doctorId: id,
+      doctorId: id || "",
       doctorName: doctorDetails?.fullName || "",
       doctorImage: doctorDetails?.image || "",
       clinicName: clinicDetails?.clinicName || "",
       specialtyName: specialty?.specialtiesName || "",
       examinationPrice: doctorDetails?.examinationPrice || 0,
-      selectedDate: selectedDate, // Ngày đã chọn (dạng "Thứ X - dd/mm/yyyy")
+      selectedDate: selectedDate || "", // Ngày đã chọn (dạng "Thứ X - dd/mm/yyyy")
       timeSlot: {
         startTime: timeSlot.startTime,
         endTime: timeSlot.endTime,
@@ -236,8 +236,23 @@ export const DoctorPage = () => {
     // Có hai cách để lưu trữ và truyền dữ liệu:
 
     // Cách 1: Sử dụng localStorage (phù hợp cho dữ liệu không nhạy cảm)
-    localStorage.setItem("bookingData", JSON.stringify(bookingData));
-    navigate("/booking");
+    // localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    //navigate("/booking");
+    // Cách 2: Sử dụng query parameters (có giới hạn về kích thước)
+    const queryParams = new URLSearchParams();
+    queryParams.append("doctorId", bookingData.doctorId);
+    queryParams.append("doctorName", bookingData.doctorName);
+    // Không nên thêm ảnh vào URL vì URL có giới hạn độ dài
+    queryParams.append("clinicName", bookingData.clinicName);
+    queryParams.append("specialtyName", bookingData.specialtyName);
+    queryParams.append(
+      "examinationPrice",
+      bookingData.examinationPrice.toString()
+    );
+    queryParams.append("selectedDate", bookingData.selectedDate);
+    queryParams.append("startTime", bookingData.timeSlot.startTime);
+    queryParams.append("endTime", bookingData.timeSlot.endTime);
+    navigate(`/booking?${queryParams.toString()}`);
   };
 
   return (
