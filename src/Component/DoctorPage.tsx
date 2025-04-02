@@ -63,10 +63,6 @@ export const DoctorPage = () => {
     }
   }, [doctor, id]); // Chạy lại khi doctor hoặc id thay đổi
 
-  const handleClick = () => {
-    navigate("/booking");
-  };
-
   useEffect(() => {
     // Tạo danh sách 6 ngày làm việc kể từ ngày hiện tại (chỉ lấy Thứ 2 - Thứ 6)
     const generateWorkDays = () => {
@@ -218,6 +214,32 @@ export const DoctorPage = () => {
     setAvailableTimes(sortedTimes);
   }, [selectedDate, doctorTimeSlots, timeSlots, id]);
 
+  const handleTimeSlotClick = (timeSlot: {
+    startTime: string;
+    endTime: string;
+  }) => {
+    // Thu thập các thông tin cần thiết
+    const bookingData = {
+      doctorId: id,
+      doctorName: doctorDetails?.fullName || "",
+      doctorImage: doctorDetails?.image || "",
+      clinicName: clinicDetails?.clinicName || "",
+      specialtyName: specialty?.specialtiesName || "",
+      examinationPrice: doctorDetails?.examinationPrice || 0,
+      selectedDate: selectedDate, // Ngày đã chọn (dạng "Thứ X - dd/mm/yyyy")
+      timeSlot: {
+        startTime: timeSlot.startTime,
+        endTime: timeSlot.endTime,
+      },
+    };
+
+    // Có hai cách để lưu trữ và truyền dữ liệu:
+
+    // Cách 1: Sử dụng localStorage (phù hợp cho dữ liệu không nhạy cảm)
+    localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    navigate("/booking");
+  };
+
   return (
     <>
       <Header />
@@ -310,7 +332,7 @@ export const DoctorPage = () => {
                   availableTimes.map((item, index) => (
                     <div
                       key={index}
-                      onClick={handleClick}
+                      onClick={() => handleTimeSlotClick(item)}
                       className="tw-text-sm tw-px-2 tw-py-3 tw-border tw-w-[100px] tw-bg-gray-200 tw-cursor-pointer hover:tw-bg-sky-600 hover:tw-text-white"
                     >
                       <div className="tw-flex tw-gap-1 tw-justify-center">

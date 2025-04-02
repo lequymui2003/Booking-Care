@@ -1,6 +1,29 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import { useState, useEffect } from "react";
+
 function BookingUser() {
+  const [bookingData, setBookingData] = useState({
+    doctorId: "",
+    doctorName: "",
+    doctorImage: "",
+    clinicName: "",
+    specialtyName: "",
+    examinationPrice: 0,
+    selectedDate: "",
+    timeSlot: {
+      startTime: "",
+      endTime: "",
+    },
+  });
+
+  useEffect(() => {
+    const storedData = localStorage.getItem("bookingData");
+    if (storedData) {
+      setBookingData(JSON.parse(storedData));
+    }
+  }, []);
+
   return (
     <>
       <Header />
@@ -9,7 +32,7 @@ function BookingUser() {
           <div className="tw-max-w-6xl tw-mx-auto tw-h-full tw-flex tw-justify-center tw-content-center tw-gap-5 tw-py-3 tw-px-3">
             <div className="tw-w-[110px] tw-h-[110px] tw-mt-4 tw-overflow-hidden tw-flex tw-rounded-full">
               <img
-                src="./png/doctor1.png"
+                src={bookingData.doctorImage}
                 alt="Bác sĩ"
                 className="tw-w-[110px] tw-h-[110px] tw-object-cover"
               />
@@ -19,29 +42,29 @@ function BookingUser() {
                 <p>ĐẶT LỊCH KHÁM</p>
               </div>
               <div className="tw-text-base tw-text-sky-800">
-                <p>Phó giáo sư, Tiến Sĩ, Bác sĩ CK II Nguyễn Văn Quýnh</p>
+                <p>{bookingData.doctorName}</p>
               </div>
               <div className="tw-flex tw-gap-2 tw-text-sm">
                 <div>
                   <i className="far fa-calendar-alt"></i>
                 </div>
-                <div className="tw-text-yellow-400 tw-flex">
+                <div className="tw-text-yellow-500 tw-flex tw-gap-1">
                   <div className="tw-flex tw-gap-1 ">
                     <div>
-                      <p>10:30</p>
+                      <p>{bookingData.timeSlot.startTime}</p>
                     </div>
                     <div>
                       <p>-</p>
                     </div>
                     <div>
-                      <p>11:00</p>
+                      <p>{bookingData.timeSlot.endTime}</p>
                     </div>
                   </div>
                   <div>
                     <p>-</p>
                   </div>
                   <div>
-                    <p> Thứ 3 - 25/03/2025</p>
+                    <p>{bookingData.selectedDate}</p>
                   </div>
                 </div>
               </div>
@@ -50,7 +73,7 @@ function BookingUser() {
                   <i className="fas fa-clinic-medical"></i>
                 </div>
                 <div className="tw-content-end">
-                  <p>Hệ thống Y tế Thu Cúc cơ sở Thụy Khuê</p>
+                  <p>{bookingData.clinicName}</p>
                 </div>
               </div>
             </div>
@@ -141,8 +164,12 @@ function BookingUser() {
                   <p>Giá khám</p>
                 </div>
                 <div className="tw-flex tw-gap-1">
-                  <p>200.000</p>
-                  <p>đ</p>
+                  <p>
+                    {new Intl.NumberFormat("vi-VN").format(
+                      bookingData.examinationPrice
+                    )}
+                  </p>
+                  <p> VNĐ</p>
                 </div>
               </div>
               <div className="tw-flex tw-justify-between tw-text-sm tw-text-gray-800">
@@ -159,8 +186,12 @@ function BookingUser() {
                   <p>Tổng cộng</p>
                 </div>
                 <div className="tw-flex tw-gap-1 tw-text-red-600">
-                  <p>200.000</p>
-                  <p>đ</p>
+                  <p>
+                    {new Intl.NumberFormat("vi-VN").format(
+                      bookingData.examinationPrice
+                    )}
+                  </p>
+                  <p> VNĐ</p>
                 </div>
               </div>
             </div>
