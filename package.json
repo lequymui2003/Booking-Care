@@ -19,6 +19,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.0",
     "react-slideshow-image": "^4.3.2",
+    "sweetalert2": "^11.17.2",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

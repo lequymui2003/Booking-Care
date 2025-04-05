@@ -153,31 +153,48 @@ export const DoctorPage = () => {
 
     // Hàm chuẩn hóa ngày tháng
     const normalizeDate = (dateInput: string | Date): string => {
+      // Kiểm tra nếu dateInput là null/undefined
+      if (!dateInput) return "";
+
       let dateObj: Date;
 
+      // Nếu đầu vào là Date object
       if (dateInput instanceof Date) {
         dateObj = dateInput;
-      } else {
+      }
+      // Nếu đầu vào là string
+      else if (typeof dateInput === "string") {
         // Xử lý chuỗi có định dạng "Thứ X - dd/mm/yyyy"
         if (dateInput.includes(" - ")) {
           const datePart = dateInput.split(" - ")[1];
           const [day, month, year] = datePart.split("/").map(Number);
           dateObj = new Date(year, month - 1, day);
-        } else {
-          // Thử parse theo ISO hoặc dd/mm/yyyy
-          dateObj = new Date(dateInput);
-          if (isNaN(dateObj.getTime())) {
-            const [day, month, year] = dateInput.split("/").map(Number);
-            dateObj = new Date(year, month - 1, day);
-          }
         }
+        // Xử lý chuỗi ISO (2025-07-03T17:00:00.000Z)
+        else if (dateInput.includes("T")) {
+          dateObj = new Date(dateInput);
+        }
+        // Xử lý chuỗi dd/mm/yyyy
+        else {
+          const [day, month, year] = dateInput.split("/").map(Number);
+          dateObj = new Date(year, month - 1, day);
+        }
+      }
+      // Trường hợp không xác định
+      else {
+        return "Invalid date";
+      }
+
+      // Kiểm tra Date hợp lệ
+      if (isNaN(dateObj.getTime())) {
+        return "Invalid date";
       }
 
       const month = dateObj.getMonth() + 1;
       const day = dateObj.getDate();
       const year = dateObj.getFullYear();
 
-      return `${month}/${day}/${year}`;
+      return `${day}/${month}/${year}`; // Trả về dd/mm/yyyy
     };
 
     // Chuẩn hóa ngày được chọn
@@ -267,7 +284,7 @@ export const DoctorPage = () => {
     queryParams.append("selectedDate", bookingData.selectedDate);
     queryParams.append("startTime", bookingData.timeSlot.startTime);
     queryParams.append("endTime", bookingData.timeSlot.endTime);
-    
+
     navigate(`/booking?${queryParams.toString()}`);
   };
 
@@ -315,10 +332,6 @@ export const DoctorPage = () => {
               </div>
               <div>
                 <span className="tw-whitespace-pre-line tw-text-sm tw-text-[#555]">
-                  {/* Bác sĩ có 35 năm kinh nghiệm về vực Cột sống, thần kinh, cơ
-                  xương khớp <br />
-                  Phó chủ tịch hội Phẫu thuật cột sống Việt Nam <br />
-                  Bác sĩ nhận khám từ 7 tuổi trở lên */}
                   {doctorDetails?.description}
                 </span>
               </div>

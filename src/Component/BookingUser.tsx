@@ -5,8 +5,9 @@ import { useState, useEffect } from "react";
 import { useDoctor, usePatient, useTimeSlot } from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
+import { createRecord } from "../store/collection.api"; // Giả sử bạn đã định nghĩa hàm này trong utils/bkSDK
 import bkSDK from "../store/bkSDK";
-
+import Swal from "sweetalert2";
 
 function BookingUser() {
   const [doctor, getDoctor] = useDoctor();
@@ -30,6 +31,7 @@ function BookingUser() {
       endTime: "",
     },
   });
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // State để kiểm soát hiển thị popup
 
   useEffect(() => {
     getDoctor();
@@ -130,7 +132,7 @@ function BookingUser() {
   }, [bookingData, timeSlots]);
 
   console.log("Matched TimeSlot ID:", matchedTimeSlotId);
-  const prepareBookingData = () => {
+  const prepareBookingData = async () => {
     // Lấy ngày từ `selectedDate` (loại bỏ thứ nếu có)
     const rawDate = bookingData.selectedDate; // "Thứ 2 - 7/4/2025"
     const dateOnly = rawDate.replace(/^Thứ \d+ - /, ""); // Kết quả: "7/4/2025"
@@ -144,11 +146,21 @@ function BookingUser() {
       reason: reason,
     };
     console.log("Booking data prepared:", info);
-    bkSDK.createRecord("appointment", info, {}, false).then((response) => {
-      console.log("Booking data saved successfully:", response);
-    });
+    try {
+      const condition = {};
+      const isMany = false;
+      bkSDK.createRecord("appointment", info, condition, isMany);
+      Swal.fire("Thêm thành công!", "Bản ghi đã được lưu.", "success").then(
+        () => {
+          location.reload();
+        }
+      );
+    } catch (error) {
+      console.log(error);
+      Swal.fire("Error!", "There was an error deleting your record.", "error");
+    }
   };
-
+  // createRecord("appointment", info, {}, false);
   return (
     <>
       <Header />

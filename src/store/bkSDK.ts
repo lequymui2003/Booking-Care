@@ -166,13 +166,13 @@ const bkSDK = {
     condition: any,
     isMany: boolean
   ) => {
-    console.log(
-      name +
-        " 11111 " +
-        JSON.stringify(collection) +
-        " 11111 " +
-        JSON.stringify(condition)
-    );
+    // console.log(
+    //   name +
+    //     " 11111 " +
+    //     JSON.stringify(collection) +
+    //     " 11111 " +
+    //     JSON.stringify(condition)
+    // );
     return await axios.post(`${baseUrl}/${name}s`, {
       [pluralize.singular(name)]: collection,
       condition: condition,
