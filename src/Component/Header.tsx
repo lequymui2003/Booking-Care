@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../store/hooks";
 
 // Define prop types for LeftSidebar
 interface LeftSidebarProps {
@@ -37,11 +38,6 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
       icon: "fas fa-user-md",
       path: "/doctors",
       description: "Chọn bác sĩ giỏi",
-    },
-    {
-      title: "Lịch hẹn",
-      icon: "far fa-calendar-alt",
-      path: "/appointmentSchedule",
     },
     {
       title: "Đăng nhập / đăng ký",
@@ -139,9 +135,20 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
 function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [users, getUser] = useUser();
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const handleClick = () => {
-    navigate("/appointmentSchedule");
+    const user = users.find((u) => u.id === Number(userId));
+    if (!user || user.role !== "user") {
+      navigate("/appointmentScheduleDoctor");
+    } else {
+      navigate("/appointmentSchedule");
+    }
   };
 
   const toggleSidebar = () => {

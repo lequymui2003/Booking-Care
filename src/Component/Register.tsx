@@ -2,9 +2,6 @@ import { useNavigate } from "react-router-dom";
 
 function Register() {
   const navigate = useNavigate();
-  const handleClick = () => {
-    navigate("/login");
-  };
 
   return (
     <div className="tw-relative tw-min-h-screen tw-bg-[#F5F5F5] tw-overflow-hidden">
@@ -17,14 +14,12 @@ function Register() {
 
       {/* Top Navigation */}
       <div className="tw-absolute tw-z-20 tw-top-0 tw-left-0 tw-right-0 tw-p-4 tw-flex tw-justify-between tw-items-center">
-        {/* Logo */}
         <div className="tw-w-[208px] tw-h-[52px] tw-md:w-[136px] tw-md:h-[66px]">
           <img src="./svg/logo.svg" alt="Logo" className="tw-w-full" />
         </div>
 
-        {/* Chuyển sang trang đăng nhập */}
         <button
-          onClick={handleClick}
+          onClick={() => navigate("/login")}
           className="tw-bg-blue-600 tw-text-white tw-px-4 tw-py-2 tw-rounded-md"
         >
           Đăng nhập
@@ -40,30 +35,33 @@ function Register() {
           <form>
             <div className="tw-mb-4">
               <input
-                type="text"
-                placeholder="Họ tên"
-                className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
-              />
-            </div>
-            <div className="tw-mb-4">
-              <input
                 type="email"
                 placeholder="Email"
                 className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
               />
             </div>
+
             <div className="tw-mb-4">
               <input
-                type="tel"
-                placeholder="Số điện thoại"
+                type="password"
+                placeholder="Mật khẩu"
                 className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
               />
             </div>
+
+            <div className="tw-mb-4">
+              <input
+                type="password"
+                placeholder="Nhập lại mật khẩu"
+                className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded-md"
+              />
+            </div>
+
             <button
               type="submit"
-              className="tw-w-full tw-bg-blue-600 tw-text-white tw-py-2 tw-rounded-md"
+              className="tw-w-full tw-bg-blue-600 tw-text-white tw-py-2 tw-rounded-md hover:tw-bg-blue-700"
             >
-              Tiếp theo
+              Đăng ký
             </button>
           </form>
         </div>

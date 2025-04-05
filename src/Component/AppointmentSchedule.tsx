@@ -1,6 +1,25 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import { ItemAppointment } from "../interface/itemAppointment";
+import { useAppointment } from "../store/hooks";
+import { useEffect } from "react";
+
 function AppointmentSchedule() {
+  const userId = localStorage.getItem("userId");
+  const [appointments, getAppointments] = useAppointment();
+
+  useEffect(() => {
+    getAppointments();
+  }, []);
+
+
+  useEffect(() => {
+    const appointment = appointments?.filter(
+      (app: ItemAppointment) => app.patientId === Number(userId)
+    );
+    console.log(appointment);
+  }, [appointments]);
+
   return (
     <>
       <Header />

@@ -2,16 +2,21 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { ItemPatient } from "../interface/itemPatient";
 import { useState, useEffect } from "react";
-import { useDoctor, usePatient } from "../store/hooks";
+import { useDoctor, usePatient, useTimeSlot } from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
+import { ItemTimeSlot } from "../interface/itemTimeSlot";
+import bkSDK from "../store/bkSDK";
+
 
 function BookingUser() {
   const [doctor, getDoctor] = useDoctor();
   const userId = localStorage.getItem("userId"); // Lấy id từ localStorage
   const [patients, getPatients] = usePatient();
+  const [timeSlots, getTimeSlots] = useTimeSlot();
   const [currentPatient, setCurrentPatient] = useState<ItemPatient | null>(
     null
   );
+  const [reason, setReason] = useState<string>(""); // State để lưu lý do khám
   const [bookingData, setBookingData] = useState({
     doctorId: "",
     doctorName: "",
@@ -29,7 +34,10 @@ function BookingUser() {
   useEffect(() => {
     getDoctor();
     getPatients();
+    getTimeSlots();
   }, []);
+
+  // Sử dụng hook useTimeSlot để lấy danh sách time slots
 
   // Thêm useEffect để lọc thông tin patient
   useEffect(() => {
@@ -94,6 +102,51 @@ function BookingUser() {
       Date.UTC(Number(year), Number(month) - 1, Number(day))
     );
     return date.toISOString().split("T")[0];
+  };
+
+  // State để lưu id của time slot khớp
+  const [matchedTimeSlotId, setMatchedTimeSlotId] = useState();
+
+  // Effect để tìm time slot id khi bookingData hoặc timeSlots thay đổi
+  useEffect(() => {
+    if (
+      bookingData.timeSlot.startTime &&
+      bookingData.timeSlot.endTime &&
+      timeSlots?.length > 0
+    ) {
+      const matchedSlot = timeSlots.find(
+        (slot: ItemTimeSlot) =>
+          slot.startTime === bookingData.timeSlot.startTime &&
+          slot.endTime === bookingData.timeSlot.endTime
+      );
+
+      if (matchedSlot) {
+        setMatchedTimeSlotId(matchedSlot.id);
+        console.log("Matched TimeSlot ID:", matchedSlot.id);
+      } else {
+        console.warn("No matching time slot found for:", bookingData.timeSlot);
+      }
+    }
+  }, [bookingData, timeSlots]);
+
+  console.log("Matched TimeSlot ID:", matchedTimeSlotId);
+  const prepareBookingData = () => {
+    // Lấy ngày từ `selectedDate` (loại bỏ thứ nếu có)
+    const rawDate = bookingData.selectedDate; // "Thứ 2 - 7/4/2025"
+    const dateOnly = rawDate.replace(/^Thứ \d+ - /, ""); // Kết quả: "7/4/2025"
+    let info = {
+      id: Date.now(), // ID là timestamp hiện tại
+      patientId: userId ? Number(userId) : null,
+      doctorId: bookingData.doctorId ? Number(bookingData.doctorId) : null,
+      timeSlotId: matchedTimeSlotId,
+      appointmentDate: dateOnly, // Chỉ lưu "20/11/2023" (không có thứ)
+      status: "Chờ xác nhận",
+      reason: reason,
+    };
+    console.log("Booking data prepared:", info);
+    bkSDK.createRecord("appointment", info, {}, false).then((response) => {
+      console.log("Booking data saved successfully:", response);
+    });
   };
 
   return (
@@ -252,6 +305,7 @@ function BookingUser() {
                 placeholder="Lý do khám"
                 className="tw-w-full focus:tw-outline-none"
                 rows={4}
+                onChange={(e) => setReason(e.target.value)} // Cập nhật state khi người dùng nhập
               />
             </div>
             <div className="tw-w-full tw-h-full tw-flex tw-flex-col tw-gap-2 tw-px-3 tw-py-2 tw-bg-gray-100">
@@ -320,7 +374,13 @@ function BookingUser() {
                 </ul>
               </div>
             </div>
-            <div className="tw-w-full tw-h-full tw-px-3 tw-py-2 tw-bg-yellow-500 tw-justify-items-center tw-text-white tw-rounded-md tw-cursor-pointer">
+            <div
+              className="tw-w-full tw-h-full tw-px-3 tw-py-2 tw-bg-yellow-500 tw-justify-items-center tw-text-white tw-rounded-md tw-cursor-pointer"
+              onClick={() => {
+                const bookingInfo = prepareBookingData();
+                console.log("Thông tin đặt lịch:", bookingInfo);
+              }}
+            >
               <p>Xác nhận đặt khám</p>
             </div>
             <div className="tw-w-full tw-h-full tw-px-3 tw-text-[13px] tw-text-gray-600">

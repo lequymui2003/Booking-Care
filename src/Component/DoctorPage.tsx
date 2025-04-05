@@ -267,6 +267,7 @@ export const DoctorPage = () => {
     queryParams.append("selectedDate", bookingData.selectedDate);
     queryParams.append("startTime", bookingData.timeSlot.startTime);
     queryParams.append("endTime", bookingData.timeSlot.endTime);
+    
     navigate(`/booking?${queryParams.toString()}`);
   };
 
