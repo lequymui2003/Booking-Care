@@ -124,6 +124,11 @@ export const DoctorPage = () => {
     const workDays = generateWorkDays();
     setOptions(workDays);
 
+    // Set ngày đầu tiên làm mặc định
+    if (workDays.length > 0) {
+      setSelectedDate(workDays[0]);
+    }
+
     // Kiểm tra
     // console.log("Các ngày làm việc:", workDays);
   }, []);
@@ -150,6 +155,8 @@ export const DoctorPage = () => {
   useEffect(() => {
     if (!id || !doctorTimeSlots || !timeSlots || !selectedDate || !appointments)
       return;
+    // Sử dụng selectedDate hoặc ngày đầu tiên
+    const dateToUse = selectedDate || options[0];
 
     // Hàm chuẩn hóa ngày tháng
     const normalizeDate = (dateInput: string | Date): string => {
@@ -198,21 +205,26 @@ export const DoctorPage = () => {
     };
 
     // Chuẩn hóa ngày được chọn
-    const formattedSelectedDate = convertToMMDDYYYY(selectedDate);
+    const formattedSelectedDate = convertToMMDDYYYY(dateToUse);
     const normalizedSelectedDate = normalizeDate(formattedSelectedDate);
 
     // Lọc các slot theo doctor, ngày và chưa được đặt
     const doctorTimeSlotsFiltered = doctorTimeSlots.filter(
       (slot: ItemDoctorTimeSlot) => {
-        // Kiểm tra doctor_id và ngày
         const slotDateNormalized = normalizeDate(slot.doctorTimeSlot_Date);
+        const normalizedSelectedDate = normalizeDate(
+          convertToMMDDYYYY(selectedDate)
+        );
+
+        // Kiểm tra không cùng doctor hoặc ngày
         if (
           slot.doctor_id !== parseInt(id) ||
           slotDateNormalized !== normalizedSelectedDate
-        )
+        ) {
           return false;
+        }
 
-        // Kiểm tra slot đã được đặt chưa
+        // Kiểm tra slot đã được đặt chưa (QUAN TRỌNG: return !isBooked)
         const isBooked = appointments.some((appt: ItemAppointment) => {
           const apptDateNormalized = normalizeDate(appt.appointmentDate);
           return (
@@ -222,11 +234,11 @@ export const DoctorPage = () => {
           );
         });
 
-        return isBooked;
+        return !isBooked; // Chỉ giữ lại slot CHƯA đặt
       }
     );
 
-    // ... phần còn lại giữ nguyên
+    // Tạo danh sách time slot khả dụng
     const timesWithId = doctorTimeSlotsFiltered
       .map((slot: ItemDoctorTimeSlot) => {
         const foundTimeSlot = timeSlots.find(
