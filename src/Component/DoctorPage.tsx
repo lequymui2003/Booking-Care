@@ -155,9 +155,6 @@ export const DoctorPage = () => {
   useEffect(() => {
     if (!id || !doctorTimeSlots || !timeSlots || !selectedDate || !appointments)
       return;
-    // Sử dụng selectedDate hoặc ngày đầu tiên
-    const dateToUse = selectedDate || options[0];
-
     // Hàm chuẩn hóa ngày tháng
     const normalizeDate = (dateInput: string | Date): string => {
       // Kiểm tra nếu dateInput là null/undefined
@@ -203,10 +200,6 @@ export const DoctorPage = () => {
 
       return `${day}/${month}/${year}`; // Trả về dd/mm/yyyy
     };
-
-    // Chuẩn hóa ngày được chọn
-    const formattedSelectedDate = convertToMMDDYYYY(dateToUse);
-    const normalizedSelectedDate = normalizeDate(formattedSelectedDate);
 
     // Lọc các slot theo doctor, ngày và chưa được đặt
     const doctorTimeSlotsFiltered = doctorTimeSlots.filter(

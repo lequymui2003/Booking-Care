@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { useDoctor, usePatient, useTimeSlot } from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
-import { createRecord } from "../store/collection.api"; // Giả sử bạn đã định nghĩa hàm này trong utils/bkSDK
 import bkSDK from "../store/bkSDK";
 import Swal from "sweetalert2";
 
@@ -31,7 +30,6 @@ function BookingUser() {
       endTime: "",
     },
   });
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // State để kiểm soát hiển thị popup
 
   useEffect(() => {
     getDoctor();
@@ -160,7 +158,7 @@ function BookingUser() {
       Swal.fire("Error!", "There was an error deleting your record.", "error");
     }
   };
-  // createRecord("appointment", info, {}, false);
+
   return (
     <>
       <Header />

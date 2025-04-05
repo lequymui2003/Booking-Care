@@ -23,7 +23,7 @@ function Specialty() {
     setSpecialtyList(specialty); // Gán giá trị của specialty vào state specialtyList
   },[specialtyList])
   useEffect(() => {
-    console.log("specialtyList", specialtyList);
+    // console.log("specialtyList", specialtyList);
   }, []);
 
 

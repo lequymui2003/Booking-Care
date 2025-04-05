@@ -63,7 +63,6 @@ export function ElementDoctor(props: { index: number; data: ItemDoctor }) {
   const handleClick = () => {
     navigate(`/doctorPage/${props.data.id}`);
   };
-  console.log("Doctor data:", props.data);
   return (
     <div key={props.index} onClick={handleClick}>
       <div className="tw-cursor-pointer tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-w-[252px]">
