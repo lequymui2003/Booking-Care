@@ -169,9 +169,7 @@ function BookingUser() {
         "Đặt lịch hẹn thành công!",
         "Hãy đợi bác sĩ xác nhận lịch hẹn",
         "success"
-      ).then(() => {
-        location.reload();
-      });
+      );
     } catch (error) {
       console.log(error);
       Swal.fire("Error!", "There was an error deleting your record.", "error");

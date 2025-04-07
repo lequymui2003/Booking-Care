@@ -155,50 +155,66 @@ export const DoctorPage = () => {
   useEffect(() => {
     if (!id || !doctorTimeSlots || !timeSlots || !selectedDate || !appointments)
       return;
-    // Hàm chuẩn hóa ngày tháng
+
+    // Hàm chuẩn hóa ngày tháng - CHỈNH SỬA để thống nhất với định dạng trong DB
+    // Cải tiến hàm normalizeDate để đảm bảo nhất quán
     const normalizeDate = (dateInput: string | Date): string => {
-      // Kiểm tra nếu dateInput là null/undefined
       if (!dateInput) return "";
 
       let dateObj: Date;
 
-      // Nếu đầu vào là Date object
-      if (dateInput instanceof Date) {
-        dateObj = dateInput;
-      }
-      // Nếu đầu vào là string
-      else if (typeof dateInput === "string") {
-        // Xử lý chuỗi có định dạng "Thứ X - dd/mm/yyyy"
-        if (dateInput.includes(" - ")) {
+      try {
+        // Nếu đầu vào là Date object
+        if (dateInput instanceof Date) {
+          dateObj = dateInput;
+        }
+        // Nếu đầu vào có định dạng "Thứ X - dd/mm/yyyy"
+        else if (typeof dateInput === "string" && dateInput.includes(" - ")) {
           const datePart = dateInput.split(" - ")[1];
           const [day, month, year] = datePart.split("/").map(Number);
           dateObj = new Date(year, month - 1, day);
         }
-        // Xử lý chuỗi ISO (2025-07-03T17:00:00.000Z)
-        else if (dateInput.includes("T")) {
+        // Nếu đầu vào là ISO string
+        else if (typeof dateInput === "string" && dateInput.includes("T")) {
           dateObj = new Date(dateInput);
         }
-        // Xử lý chuỗi dd/mm/yyyy
-        else {
-          const [day, month, year] = dateInput.split("/").map(Number);
-          dateObj = new Date(year, month - 1, day);
+        // Xử lý chuỗi mm/dd/yyyy hoặc dd/mm/yyyy
+        else if (typeof dateInput === "string" && dateInput.includes("/")) {
+          const parts = dateInput.split("/");
+          if (parts.length === 3) {
+            // Kiểm tra xem có phải mm/dd/yyyy không
+            const [part1, part2, year] = parts.map(Number);
+            if (part1 > 12 && part2 <= 12) {
+              // Có thể là dd/mm/yyyy
+              dateObj = new Date(year, part2 - 1, part1);
+            } else {
+              // Mặc định xử lý như mm/dd/yyyy
+              dateObj = new Date(year, part1 - 1, part2);
+            }
+          } else {
+            return "";
+          }
+        } else {
+          return "";
         }
-      }
-      // Trường hợp không xác định
-      else {
-        return "Invalid date";
-      }
 
-      // Kiểm tra Date hợp lệ
-      if (isNaN(dateObj.getTime())) {
-        return "Invalid date";
+        // Kiểm tra Date hợp lệ
+        if (isNaN(dateObj.getTime())) {
+          return "";
+        }
+
+        // Trả về chuỗi mm/dd/yyyy với số 0 đứng trước nếu cần
+        const month = dateObj.getMonth() + 1;
+        const day = dateObj.getDate();
+        const year = dateObj.getFullYear();
+
+        return `${month.toString().padStart(2, "0")}/${day
+          .toString()
+          .padStart(2, "0")}/${year}`;
+      } catch (error) {
+        console.error("Error normalizing date:", error);
+        return "";
       }
-
-      const month = dateObj.getMonth() + 1;
-      const day = dateObj.getDate();
-      const year = dateObj.getFullYear();
-
-      return `${day}/${month}/${year}`; // Trả về dd/mm/yyyy
     };
 
     // Lọc các slot theo doctor, ngày và chưa được đặt
@@ -209,6 +225,10 @@ export const DoctorPage = () => {
           convertToMMDDYYYY(selectedDate)
         );
 
+        // Debug để kiểm tra định dạng ngày
+        console.log("Slot date:", slotDateNormalized);
+        console.log("Selected date:", normalizedSelectedDate);
+
         // Kiểm tra không cùng doctor hoặc ngày
         if (
           slot.doctor_id !== parseInt(id) ||
@@ -217,16 +237,53 @@ export const DoctorPage = () => {
           return false;
         }
 
-        // Kiểm tra slot đã được đặt chưa (QUAN TRỌNG: return !isBooked)
+        // Kiểm tra slot đã được đặt chưa
+        // Kiểm tra slot đã được đặt chưa
         const isBooked = appointments.some((appt: ItemAppointment) => {
-          const apptDateNormalized = normalizeDate(appt.appointmentDate);
-          return (
-            appt.doctorId === parseInt(id) &&
-            appt.timeSlotId === slot.timeSlot_id &&
-            apptDateNormalized === slotDateNormalized
-          );
+          try {
+            const apptDateNormalized = normalizeDate(
+              appt.appointmentDate
+            ).trim();
+            const slotDateNormalized = normalizeDate(
+              slot.doctorTimeSlot_Date
+            ).trim();
+
+            // Debug để kiểm tra việc so sánh
+            if (
+              appt.doctorId === parseInt(id) &&
+              appt.timeSlotId === slot.timeSlot_id
+            ) {
+              console.log(
+                "Comparison details:",
+                "\nAppt ID:",
+                appt.id,
+                "\nAppointment date:",
+                apptDateNormalized,
+                "\nSlot date:",
+                slotDateNormalized,
+                "\nExact match?",
+                apptDateNormalized === slotDateNormalized,
+                "\nLength check:",
+                apptDateNormalized.length,
+                slotDateNormalized.length,
+                "\nCharacter codes:",
+                Array.from(apptDateNormalized).map((c) => c.charCodeAt(0)),
+                Array.from(slotDateNormalized).map((c) => c.charCodeAt(0))
+              );
+            }
+
+            return (
+              appt.doctorId === parseInt(id) &&
+              appt.timeSlotId === slot.timeSlot_id &&
+              apptDateNormalized === slotDateNormalized
+            );
+          } catch (error) {
+            console.error("Error checking if slot is booked:", error);
+            return false;
+          }
         });
 
+        console.log(`Slot ${slot.timeSlot_id} is booked:`, isBooked);
         return !isBooked; // Chỉ giữ lại slot CHƯA đặt
       }
     );
@@ -249,6 +306,7 @@ export const DoctorPage = () => {
       endTime: item.endTime,
     }));
 
+    console.log("Available times:", sortedTimes);
     setAvailableTimes(sortedTimes);
   }, [selectedDate, doctorTimeSlots, timeSlots, id, appointments]);
 
