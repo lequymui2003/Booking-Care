@@ -2,17 +2,24 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { ItemPatient } from "../interface/itemPatient";
 import { useState, useEffect } from "react";
-import { useDoctor, usePatient, useTimeSlot } from "../store/hooks";
+import {
+  useDoctor,
+  usePatient,
+  useTimeSlot,
+  useAppointment,
+} from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
 import bkSDK from "../store/bkSDK";
 import Swal from "sweetalert2";
+import { ItemAppointment } from "../interface/itemClass";
 
 function BookingUser() {
   const [doctor, getDoctor] = useDoctor();
   const userId = localStorage.getItem("userId"); // Lấy id từ localStorage
   const [patients, getPatients] = usePatient();
   const [timeSlots, getTimeSlots] = useTimeSlot();
+  const [appointments, getAppointments] = useAppointment();
   const [currentPatient, setCurrentPatient] = useState<ItemPatient | null>(
     null
   );
@@ -35,6 +42,7 @@ function BookingUser() {
     getDoctor();
     getPatients();
     getTimeSlots();
+    getAppointments;
   }, []);
 
   // Sử dụng hook useTimeSlot để lấy danh sách time slots
@@ -134,25 +142,36 @@ function BookingUser() {
     // Lấy ngày từ `selectedDate` (loại bỏ thứ nếu có)
     const rawDate = bookingData.selectedDate; // "Thứ 2 - 7/4/2025"
     const dateOnly = rawDate.replace(/^Thứ \d+ - /, ""); // Kết quả: "7/4/2025"
+
+    // Chuyển từ dd/mm/yyyy => mm/dd/yyyy
+    const [day, month, year] = dateOnly.split("/");
+    const formattedDate = `${month.padStart(2, "0")}/${day.padStart(
+      2,
+      "0"
+    )}/${year}`; // "04/07/2025"
+
     let info = {
       id: Date.now(), // ID là timestamp hiện tại
       patientId: userId ? Number(userId) : null,
       doctorId: bookingData.doctorId ? Number(bookingData.doctorId) : null,
       timeSlotId: matchedTimeSlotId,
-      appointmentDate: dateOnly, // Chỉ lưu "20/11/2023" (không có thứ)
+      appointmentDate: formattedDate, // Chỉ lưu "20/11/2023" (không có thứ)
       status: "Chờ xác nhận",
       reason: reason,
     };
     console.log("Booking data prepared:", info);
+    // Kiểm tra xem lịch hẹn đã tồn tại chưa
     try {
       const condition = {};
       const isMany = false;
       bkSDK.createRecord("appointment", info, condition, isMany);
-      Swal.fire("Thêm thành công!", "Bản ghi đã được lưu.", "success").then(
-        () => {
-          location.reload();
-        }
-      );
+      Swal.fire(
+        "Đặt lịch hẹn thành công!",
+        "Hãy đợi bác sĩ xác nhận lịch hẹn",
+        "success"
+      ).then(() => {
+        location.reload();
+      });
     } catch (error) {
       console.log(error);
       Swal.fire("Error!", "There was an error deleting your record.", "error");

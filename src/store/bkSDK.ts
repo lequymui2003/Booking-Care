@@ -179,5 +179,26 @@ const bkSDK = {
       isMany,
     });
   },
+
+  updateRecord: async (
+    name: string,
+    collection: any,
+    condition: any,
+    isMany: boolean
+  ) => {
+    // console.log(
+    //   "Name: " +
+    //     name +
+    //     " data " +
+    //     JSON.stringify(condition) +
+    //     " Collection: " +
+    //     JSON.stringify(collection)
+    // );
+    return await axios.put(`${baseUrl}/${name}s`, {
+      update: collection,
+      condition: condition,
+      isMany,
+    });
+  },
 };
 export default bkSDK;
