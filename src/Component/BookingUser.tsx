@@ -8,6 +8,13 @@ import {
   useTimeSlot,
   useAppointment,
 } from "../store/hooks";
+import { getPatients } from "../service/patientService";
+import { getDoctors } from "../service/doctorService";
+import { getTimeSlots } from "../service/timeSlotService";
+import {
+  getAppointments,
+  createAppointment,
+} from "../service/appointmentService";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
 import bkSDK from "../store/bkSDK";
@@ -15,11 +22,11 @@ import Swal from "sweetalert2";
 import { ItemAppointment } from "../interface/itemClass";
 
 function BookingUser() {
-  const [doctor, getDoctor] = useDoctor();
+  const [doctor, setDoctors] = useState([]);
   const userId = localStorage.getItem("userId"); // Lấy id từ localStorage
-  const [patients, getPatients] = usePatient();
-  const [timeSlots, getTimeSlots] = useTimeSlot();
-  const [appointments, getAppointments] = useAppointment();
+  const [patients, setPatients] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [appointments, serAppointments] = useState([]);
   const [currentPatient, setCurrentPatient] = useState<ItemPatient | null>(
     null
   );
@@ -38,21 +45,45 @@ function BookingUser() {
     },
   });
 
+  const fetchData = async () => {
+    try {
+      const [doctorList, patientList, timeSlotlist, appointmentsList] =
+        await Promise.all([
+          getDoctors(),
+          getPatients(),
+          getTimeSlots(),
+          getAppointments(),
+        ]);
+      setDoctors(doctorList);
+      setPatients(patientList);
+      serAppointments(appointmentsList);
+      setTimeSlots(timeSlotlist);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy danh sách", err);
+    }
+  };
+
   useEffect(() => {
-    getDoctor();
-    getPatients();
-    getTimeSlots();
-    getAppointments;
+    fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   getDoctor();
+  //   // getPatients();
+  //   getTimeSlots();
+  //   getAppointments;
+  // }, []);
 
   // Sử dụng hook useTimeSlot để lấy danh sách time slots
 
   // Thêm useEffect để lọc thông tin patient
   useEffect(() => {
+    console.log("Patients data:", patients); // Kiểm tra cấu trúc dữ liệu
+    console.log("Current userId:", userId); // Kiểm tra giá trị userId
     if (userId && patients) {
       // Tìm patient có user_id trùng khớp với userId từ localStorage
       const foundPatient = patients.find(
-        (patient: ItemPatient) => patient.use_id === Number(userId)
+        (patient: ItemPatient) => patient.useId === Number(userId)
       );
 
       if (foundPatient) {
@@ -89,7 +120,7 @@ function BookingUser() {
       const foundDoctor = doctor.find(
         (doc: ItemDoctor) =>
           doc.id.toString() === bookingData.doctorId.toString() // So sánh bằng cách ép kiểu về chuỗi
-      );
+      ) as ItemDoctor | undefined;
 
       if (foundDoctor) {
         setBookingData((prevState) => ({
@@ -103,17 +134,28 @@ function BookingUser() {
   }, [doctor, bookingData.doctorId]); // Theo dõi sự thay đổi của doctor và doctorId
 
   // Hàm chuyển đổi ngày tháng không bị ảnh hưởng bởi timezone
-  const formatDateForInput = (dateString: string) => {
-    const [month, day, year] = dateString.split("/");
-    // Tạo Date object với múi giờ UTC
-    const date = new Date(
-      Date.UTC(Number(year), Number(month) - 1, Number(day))
-    );
-    return date.toISOString().split("T")[0];
+  const formatDateForInput = (dateInput: string | Date) => {
+    // Nếu đầu vào là Date object
+    if (dateInput instanceof Date) {
+      return dateInput.toISOString().split("T")[0];
+    }
+
+    // Nếu đầu vào là string có định dạng yyyy-mm-dd
+    if (
+      typeof dateInput === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(dateInput)
+    ) {
+      return dateInput; // Trả về nguyên bản vì đã đúng định dạng
+    }
+
+    console.warn("Unsupported date format:", dateInput);
+    return "";
   };
 
   // State để lưu id của time slot khớp
-  const [matchedTimeSlotId, setMatchedTimeSlotId] = useState();
+  const [matchedTimeSlotId, setMatchedTimeSlotId] = useState<
+    number | undefined
+  >();
 
   // Effect để tìm time slot id khi bookingData hoặc timeSlots thay đổi
   useEffect(() => {
@@ -126,7 +168,7 @@ function BookingUser() {
         (slot: ItemTimeSlot) =>
           slot.startTime === bookingData.timeSlot.startTime &&
           slot.endTime === bookingData.timeSlot.endTime
-      );
+      ) as ItemTimeSlot | undefined;
 
       if (matchedSlot) {
         setMatchedTimeSlotId(matchedSlot.id);
@@ -138,21 +180,21 @@ function BookingUser() {
   }, [bookingData, timeSlots]);
 
   console.log("Matched TimeSlot ID:", matchedTimeSlotId);
-  const prepareBookingData = async () => {
-    // Lấy ngày từ `selectedDate` (loại bỏ thứ nếu có)
-    const rawDate = bookingData.selectedDate; // "Thứ 2 - 7/4/2025"
-    const dateOnly = rawDate.replace(/^Thứ \d+ - /, ""); // Kết quả: "7/4/2025"
 
-    // Chuyển từ dd/mm/yyyy => mm/dd/yyyy
+  const prepareBookingData = async () => {
+    const rawDate = bookingData.selectedDate; // "Thứ 2 - 7/4/2025"
+    const dateOnly = rawDate.replace(/^Thứ \d+ - /, ""); // "7/4/2025"
+
+    // Chuyển đổi sang định dạng yyyy-mm-dd (không dùng Date object)
     const [day, month, year] = dateOnly.split("/");
-    const formattedDate = `${month.padStart(2, "0")}/${day.padStart(
+    const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
       2,
       "0"
-    )}/${year}`; // "04/07/2025"
+    )}`; // "2025-04-07"
 
     let info = {
       id: Date.now(), // ID là timestamp hiện tại
-      patientId: userId ? Number(userId) : null,
+      patientId: currentPatient?.id,
       doctorId: bookingData.doctorId ? Number(bookingData.doctorId) : null,
       timeSlotId: matchedTimeSlotId,
       appointmentDate: formattedDate, // Chỉ lưu "20/11/2023" (không có thứ)
@@ -162,9 +204,7 @@ function BookingUser() {
     console.log("Booking data prepared:", info);
     // Kiểm tra xem lịch hẹn đã tồn tại chưa
     try {
-      const condition = {};
-      const isMany = false;
-      bkSDK.createRecord("appointment", info, condition, isMany);
+      await createAppointment(info);
       Swal.fire(
         "Đặt lịch hẹn thành công!",
         "Hãy đợi bác sĩ xác nhận lịch hẹn",
@@ -184,7 +224,7 @@ function BookingUser() {
           <div className="tw-max-w-6xl tw-mx-auto tw-h-full tw-flex tw-justify-center tw-content-center tw-gap-5 tw-py-3 tw-px-3">
             <div className="tw-w-[110px] tw-h-[110px] tw-mt-4 tw-overflow-hidden tw-flex tw-rounded-full">
               <img
-                src={bookingData.doctorImage}
+                src={`http://localhost:5000/uploads/${bookingData.doctorImage}`}
                 alt="Bác sĩ"
                 className="tw-w-[110px] tw-h-[110px] tw-object-cover"
               />
@@ -203,13 +243,13 @@ function BookingUser() {
                 <div className="tw-text-yellow-500 tw-flex tw-gap-1">
                   <div className="tw-flex tw-gap-1 ">
                     <div>
-                      <p>{bookingData.timeSlot.startTime}</p>
+                      <p>{bookingData.timeSlot.startTime.substring(0, 5)}</p>
                     </div>
                     <div>
                       <p>-</p>
                     </div>
                     <div>
-                      <p>{bookingData.timeSlot.endTime}</p>
+                      <p>{bookingData.timeSlot.endTime.substring(0, 5)}</p>
                     </div>
                   </div>
                   <div>
@@ -296,18 +336,16 @@ function BookingUser() {
               />
             </div>
             {/*input ngày sinh */}
-            <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg  tw-text-sm focus-within:tw-border-blue-500">
+            <div className="tw-w-full tw-border tw-px-3 tw-py-2 tw-rounded-lg tw-text-sm focus-within:tw-border-blue-500">
               <input
                 type="date"
                 className="tw-w-full focus:tw-outline-none"
-                max={new Date().toISOString().split("T")[0]}
                 value={
                   currentPatient?.date
-                    ? formatDateForInput(currentPatient.date.toString())
+                    ? formatDateForInput(currentPatient.date)
                     : ""
                 }
                 readOnly
-                aria-label="Ngày sinh"
               />
               {!currentPatient?.date && (
                 <div className="tw-text-red-500 tw-text-xs tw-mt-1">

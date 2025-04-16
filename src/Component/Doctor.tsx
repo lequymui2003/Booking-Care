@@ -2,16 +2,29 @@ import ListDoctor from "../data/dataDoctor";
 import { Slide } from "react-slideshow-image";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useDoctor } from "../store/hooks";
+// import { useDoctor } from "../store/hooks";
 import { ItemDoctor } from "../interface/itemDoctor";
+import { getDoctors } from "../service/doctorService";
 function Doctor() {
-  const [doctor, getDoctor] = useDoctor();
+  const [doctor, setDoctor] = useState([]);
   const [doctorList, setDoctorList] = useState<ItemDoctor[]>([]);
 
-  // Chỉ gọi API một lần khi component mount
+  const fetchUsers = async () => {
+    try {
+      const res = await getDoctors();
+      setDoctor(res);
+    } catch (err) {
+      console.error("Lỗi lấy danh sách user:", err);
+    }
+  };
+
   useEffect(() => {
-    getDoctor();
+    fetchUsers();
   }, []);
+  // Chỉ gọi API một lần khi component mount
+  // useEffect(() => {
+  //   getDoctor();
+  // }, []);
 
   // Cập nhật doctorList khi doctor thay đổi
   useEffect(() => {
@@ -19,7 +32,6 @@ function Doctor() {
       setDoctorList(doctor);
     }
   }, [doctor]);
-
 
   return (
     <>
@@ -68,7 +80,7 @@ export function ElementDoctor(props: { index: number; data: ItemDoctor }) {
       <div className="tw-cursor-pointer tw-p-4 tw-flex tw-flex-col tw-gap-2 tw-w-[252px]">
         <div className="tw-m-auto">
           <img
-            src={props.data.image}
+            src={`http://localhost:5000/uploads/${props.data.image}`}
             alt=""
             className="tw-w-[178px] tw-rounded-full"
           />

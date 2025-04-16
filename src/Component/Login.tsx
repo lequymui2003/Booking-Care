@@ -1,35 +1,50 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from "../store/hooks";
+// import { useUser } from "../store/hooks";
+import { getUsers } from "../service/userService";
 
 function Login() {
   const navigate = useNavigate();
-  const [user, getUser] = useUser();
-
+  // const [user, getUser] = useUser();
+  const [users, setUsers] = useState([]);
   // State để lưu giá trị từ các ô input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Lấy dữ liệu user từ server
+  const fetchUsers = async () => {
+    try {
+      const res = await getUsers();
+      setUsers(res);
+    } catch (err) {
+      console.error("Lỗi lấy danh sách user:", err);
+    }
+  };
+
   useEffect(() => {
-    getUser();
+    fetchUsers();
   }, []);
+
+  // Lấy dữ liệu user từ server
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
 
   // Xử lý khi nhấn nút "Đăng nhập"
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault(); // Ngăn chặn reload trang
 
     // Kiểm tra thông tin đăng nhập
-    const foundUser = user.find(
+    const foundUser = users.find(
       (u: any) => u.email === email && u.password === password
-    );
+    ) as any | undefined;
 
     if (foundUser) {
       // Đăng nhập thành công
       console.log("Đăng nhập thành công!");
       // Tạo token ngẫu nhiên
-      const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      const token =
+        Math.random().toString(36).substring(2) + Date.now().toString(36);
       // localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
       localStorage.setItem("token", token); // Lưu token vào localStorage
       localStorage.setItem("userId", foundUser.id.toString()); // Lưu userId vào localStorage

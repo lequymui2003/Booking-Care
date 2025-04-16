@@ -2,14 +2,21 @@ import Header from "../Component/Header";
 import Footer from "../Component/Footer";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  useDoctor,
-  useSpecialties,
-  useClinic,
-  useDoctorTimeSlot,
-  useTimeSlot,
-  useAppointment,
-} from "../store/hooks";
+// import {
+//   useDoctor,
+//   useSpecialties,
+//   useClinic,
+//   useDoctorTimeSlot,
+//   useTimeSlot,
+//   useAppointment,
+// } from "../store/hooks";
+import { getDoctors } from "../service/doctorService";
+import { getSpecialties } from "../service/specialtiesService";
+import { getClinics } from "../service/clinicService";
+import { getDoctorTimeSlots } from "../service/doctorTimeSlotService";
+import { getTimeSlots } from "../service/timeSlotService";
+import { getAppointments } from "../service/appointmentService";
+
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemSpecialty } from "../interface/itemSpecialty";
 import { ItemClinic } from "../interface/listClinic";
@@ -21,29 +28,51 @@ export const DoctorPage = () => {
   const navigate = useNavigate();
   const [options, setOptions] = useState<string[]>([]);
   const { id } = useParams();
-  const [doctor, getDoctor] = useDoctor();
   const [doctorDetails, setDoctorDetails] = useState<ItemDoctor | null>(null); // State để lưu thông tin bác sĩ
-  const [specialties, getSpecialties] = useSpecialties(); // Lấy danh sách chuyên khoa từ store
   const [specialty, setSpecialty] = useState<ItemSpecialty | null>(null); // State để lưu thông tin chuyên khoa
-  const [clinic, getClinic] = useClinic(); // Lấy danh sách cơ sở y tế từ store
   const [clinicDetails, setClinicDetails] = useState<ItemClinic | null>(null); // State để lưu thông tin cơ sở y tế
-  const [doctorTimeSlots, getDoctorTimeSlot] = useDoctorTimeSlot();
-  const [timeSlots, getTimeSlot] = useTimeSlot();
-
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [availableTimes, setAvailableTimes] = useState<
     { startTime: string; endTime: string }[]
   >([]);
+  // useState lưu dữ liệu api
+  const [doctor, setDoctors] = useState([]);
+  const [specialties, setSpecialties] = useState([]);
+  const [clinic, setClinics] = useState([]);
+  const [doctorTimeSlots, setDoctorTimeSlot] = useState([]);
+  const [timeSlots, setTimeSlot] = useState([]);
+  const [appointments, setAppointments] = useState([]);
 
-  const [appointments, getAppointments] = useAppointment();
+  const fetchData = async () => {
+    try {
+      const [
+        doctorList,
+        specialtiesList,
+        clinicsList,
+        doctorTimeSlotList,
+        timeSlotlist,
+        appointmentsList,
+      ] = await Promise.all([
+        getDoctors(),
+        getSpecialties(),
+        getClinics(),
+        getDoctorTimeSlots(),
+        getTimeSlots(),
+        getAppointments(),
+      ]);
+      setDoctors(doctorList);
+      setClinics(clinicsList);
+      setSpecialties(specialtiesList);
+      setAppointments(appointmentsList);
+      setDoctorTimeSlot(doctorTimeSlotList);
+      setTimeSlot(timeSlotlist);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy danh sách", err);
+    }
+  };
 
   useEffect(() => {
-    getDoctor();
-    getSpecialties();
-    getClinic();
-    getDoctorTimeSlot();
-    getTimeSlot();
-    getAppointments();
+    fetchData();
   }, []);
 
   // Lấy ra thông tin của bác sĩ
@@ -51,7 +80,7 @@ export const DoctorPage = () => {
     if (doctor && doctor.length > 0) {
       const selectedDoctor = doctor.find(
         (doc: ItemDoctor) => doc.id === parseInt(id!, 10) // So sánh id
-      );
+      ) as ItemDoctor | undefined;
       setDoctorDetails(selectedDoctor || null); // Lưu thông tin bác sĩ vào state
       if (selectedDoctor) {
         const specialty = specialties?.find(
@@ -66,7 +95,7 @@ export const DoctorPage = () => {
         setClinicDetails(clinicDetails || null); // Lưu thông tin cơ sở y tế vào state
       }
     }
-  }, [doctor, id]); // Chạy lại khi doctor hoặc id thay đổi
+  }, [doctor, id, specialties, clinic]); // Chạy lại khi doctor hoặc id thay đổi
 
   // tạo các option thứ - ngày để hiển thị trên select option
   useEffect(() => {
@@ -125,188 +154,161 @@ export const DoctorPage = () => {
     setOptions(workDays);
 
     // Set ngày đầu tiên làm mặc định
-    if (workDays.length > 0) {
-      setSelectedDate(workDays[0]);
-    }
-
-    // Kiểm tra
-    // console.log("Các ngày làm việc:", workDays);
+    // if (workDays.length > 0) {
+    //   setSelectedDate(workDays[0]);
+    // }
   }, []);
 
-  // Cập nhật hàm convertToMMDDYYYY để xử lý đúng định dạng "Thứ X - dd/mm/yyyy"
-  const convertToMMDDYYYY = (dateString: string) => {
-    // Nếu chuỗi đầu vào có định dạng "Thứ X - dd/mm/yyyy"
+  useEffect(() => {
+    if (options.length > 0) {
+      setSelectedDate(options[0]);
+    }
+  }, [options]);
+
+  // Sửa thành convertToStandardDate để luôn trả về định dạng YYYY-MM-DD
+  const convertToStandardDate = (dateString: string) => {
+    if (!dateString) return "";
+
+    dateString = dateString.trim();
+
     if (dateString.includes(" - ")) {
-      // Tách lấy phần ngày tháng sau dấu " - "
-      const datePart = dateString.split(" - ")[1];
-      // Tách ngày, tháng, năm
-      const parts = datePart.split("/");
+      const datePart = dateString.split(" - ")[1].trim();
+      const parts = datePart.split("/").map((p) => p.trim());
       if (parts.length !== 3) return "";
-      return `${parts[1]}/${parts[0]}/${parts[2]}`; // Chuyển sang mm/dd/yyyy
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
     }
-    // Nếu đầu vào đã là dd/mm/yyyy
-    else {
-      const parts = dateString.split("/");
-      if (parts.length !== 3) return "";
-      return `${parts[1]}/${parts[0]}/${parts[2]}`;
+    // Giữ nguyên nếu đã là yyyy-mm-dd
+    else if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return dateString;
     }
+
+    return "";
   };
 
   useEffect(() => {
     if (!id || !doctorTimeSlots || !timeSlots || !selectedDate || !appointments)
       return;
 
-    // Hàm chuẩn hóa ngày tháng - CHỈNH SỬA để thống nhất với định dạng trong DB
-    // Cải tiến hàm normalizeDate để đảm bảo nhất quán
     const normalizeDate = (dateInput: string | Date): string => {
       if (!dateInput) return "";
 
-      let dateObj: Date;
-
       try {
-        // Nếu đầu vào là Date object
-        if (dateInput instanceof Date) {
-          dateObj = dateInput;
-        }
-        // Nếu đầu vào có định dạng "Thứ X - dd/mm/yyyy"
-        else if (typeof dateInput === "string" && dateInput.includes(" - ")) {
-          const datePart = dateInput.split(" - ")[1];
+        // Xử lý ngày từ UI: "Thứ X - dd/mm/yyyy"
+        if (typeof dateInput === "string" && dateInput.includes(" - ")) {
+          const datePart = dateInput.split(" - ")[1].trim();
           const [day, month, year] = datePart.split("/").map(Number);
-          dateObj = new Date(year, month - 1, day);
+          return `${year}-${month.toString().padStart(2, "0")}-${day
+            .toString()
+            .padStart(2, "0")}`;
         }
-        // Nếu đầu vào là ISO string
-        else if (typeof dateInput === "string" && dateInput.includes("T")) {
-          dateObj = new Date(dateInput);
-        }
-        // Xử lý chuỗi mm/dd/yyyy hoặc dd/mm/yyyy
+        // Xử lý ngày có định dạng MM/DD/YYYY
         else if (typeof dateInput === "string" && dateInput.includes("/")) {
-          const parts = dateInput.split("/");
-          if (parts.length === 3) {
-            // Kiểm tra xem có phải mm/dd/yyyy không
-            const [part1, part2, year] = parts.map(Number);
-            if (part1 > 12 && part2 <= 12) {
-              // Có thể là dd/mm/yyyy
-              dateObj = new Date(year, part2 - 1, part1);
-            } else {
-              // Mặc định xử lý như mm/dd/yyyy
-              dateObj = new Date(year, part1 - 1, part2);
-            }
-          } else {
-            return "";
-          }
-        } else {
-          return "";
+          const [month, day, year] = dateInput
+            .split("/")
+            .map((part) => part.trim());
+          return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
         }
-
-        // Kiểm tra Date hợp lệ
-        if (isNaN(dateObj.getTime())) {
-          return "";
+        // Giữ nguyên nếu đã là yyyy-mm-dd
+        else if (
+          typeof dateInput === "string" &&
+          dateInput.match(/^\d{4}-\d{2}-\d{2}$/)
+        ) {
+          return dateInput;
         }
-
-        // Trả về chuỗi mm/dd/yyyy với số 0 đứng trước nếu cần
-        const month = dateObj.getMonth() + 1;
-        const day = dateObj.getDate();
-        const year = dateObj.getFullYear();
-
-        return `${month.toString().padStart(2, "0")}/${day
-          .toString()
-          .padStart(2, "0")}/${year}`;
+        // Xử lý Date object
+        else if (dateInput instanceof Date) {
+          const month = dateInput.getMonth() + 1;
+          const day = dateInput.getDate();
+          const year = dateInput.getFullYear();
+          return `${year}-${month.toString().padStart(2, "0")}-${day
+            .toString()
+            .padStart(2, "0")}`;
+        }
       } catch (error) {
         console.error("Error normalizing date:", error);
-        return "";
       }
+      return "";
     };
 
-    // Lọc các slot theo doctor, ngày và chưa được đặt
+    const selectedDateStandard = normalizeDate(
+      convertToStandardDate(selectedDate)
+    );
+
+    // console.log("Selected Date Standard:", selectedDateStandard);
+    // console.log("All slots before filtering:", doctorTimeSlots.length);
+
+    // Lọc các slot theo doctor và ngày
     const doctorTimeSlotsFiltered = doctorTimeSlots.filter(
       (slot: ItemDoctorTimeSlot) => {
-        const slotDateNormalized = normalizeDate(slot.doctorTimeSlot_Date);
-        const normalizedSelectedDate = normalizeDate(
-          convertToMMDDYYYY(selectedDate)
-        );
-
-        // Debug để kiểm tra định dạng ngày
-        console.log("Slot date:", slotDateNormalized);
-        console.log("Selected date:", normalizedSelectedDate);
+        const slotDateStandard = normalizeDate(slot.doctorTimeSlot_Date);
 
         // Kiểm tra không cùng doctor hoặc ngày
         if (
-          slot.doctor_id !== parseInt(id) ||
-          slotDateNormalized !== normalizedSelectedDate
+          Number(slot.doctorId) !== Number(id) ||
+          slotDateStandard !== selectedDateStandard
         ) {
           return false;
         }
 
         // Kiểm tra slot đã được đặt chưa
-        // Kiểm tra slot đã được đặt chưa
         const isBooked = appointments.some((appt: ItemAppointment) => {
-          try {
-            const apptDateNormalized = normalizeDate(
-              appt.appointmentDate
-            ).trim();
-            const slotDateNormalized = normalizeDate(
-              slot.doctorTimeSlot_Date
-            ).trim();
+          const apptDateStandard = normalizeDate(appt.appointmentDate);
 
-            // Debug để kiểm tra việc so sánh
-            if (
-              appt.doctorId === parseInt(id) &&
-              appt.timeSlotId === slot.timeSlot_id
-            ) {
-              console.log(
-                "Comparison details:",
-                "\nAppt ID:",
-                appt.id,
-                "\nAppointment date:",
-                apptDateNormalized,
-                "\nSlot date:",
-                slotDateNormalized,
-                "\nExact match?",
-                apptDateNormalized === slotDateNormalized,
-                "\nLength check:",
-                apptDateNormalized.length,
-                slotDateNormalized.length,
-                "\nCharacter codes:",
-                Array.from(apptDateNormalized).map((c) => c.charCodeAt(0)),
-                Array.from(slotDateNormalized).map((c) => c.charCodeAt(0))
-              );
-            }
+          // Kiểm tra có cùng doctor, timeslot và ngày không
+          const matchDoctor = Number(appt.doctorId) === Number(id);
+          const matchTimeSlot =
+            Number(appt.timeSlotId) === Number(slot.timeSlotId);
+          const matchDate = apptDateStandard === slotDateStandard;
 
-            return (
-              appt.doctorId === parseInt(id) &&
-              appt.timeSlotId === slot.timeSlot_id &&
-              apptDateNormalized === slotDateNormalized
-            );
-          } catch (error) {
-            console.error("Error checking if slot is booked:", error);
-            return false;
-          }
+          // console.log(`Appointment check:
+          //   Doctor: ${matchDoctor} (${appt.doctorId} vs ${id})
+          //   TimeSlot: ${matchTimeSlot} (${appt.timeSlotId} vs ${slot.timeSlotId})
+          //   Date: ${matchDate} (${apptDateStandard} vs ${slotDateStandard})`);
+
+          return matchDoctor && matchTimeSlot && matchDate;
         });
 
-        console.log(`Slot ${slot.timeSlot_id} is booked:`, isBooked);
-        return !isBooked; // Chỉ giữ lại slot CHƯA đặt
+        // console.log(`Slot ${slot.timeSlotId} is booked:`, isBooked);
+        return !isBooked;
       }
     );
+
+    // console.log(
+    //   "Slots after doctor and date filtering:",
+    //   doctorTimeSlotsFiltered.length
+    // );
 
     // Tạo danh sách time slot khả dụng
     const timesWithId = doctorTimeSlotsFiltered
       .map((slot: ItemDoctorTimeSlot) => {
         const foundTimeSlot = timeSlots.find(
-          (time: ItemTimeSlot) => time.id === slot.timeSlot_id
-        );
+          (time: ItemTimeSlot) => Number(time.id) === Number(slot.timeSlotId)
+        ) as ItemTimeSlot | undefined; // Thêm type assertion
+
         return foundTimeSlot
-          ? { ...foundTimeSlot, timeSlot_id: slot.timeSlot_id }
+          ? {
+              ...foundTimeSlot, // Giờ TypeScript biết `foundTimeSlot` là `ItemTimeSlot`
+              timeSlot_id: slot.timeSlotId,
+            }
           : null;
       })
-      .filter(Boolean);
+      .filter(Boolean); // Lọc bỏ các giá trị `null`
 
-    timesWithId.sort((a: any, b: any) => a.timeSlot_id - b.timeSlot_id);
-    const sortedTimes = timesWithId.map((item: ItemTimeSlot) => ({
+    // console.log("Times with ID after finding timeSlots:", timesWithId.length);
+
+    // Sắp xếp theo ID
+    timesWithId.sort(
+      (a: any, b: any) => Number(a.timeSlot_id) - Number(b.timeSlot_id)
+    );
+
+    // Tạo danh sách kết quả cuối cùng
+    const sortedTimes = timesWithId.map((item: any) => ({
       startTime: item.startTime,
       endTime: item.endTime,
     }));
 
-    console.log("Available times:", sortedTimes);
+    console.log("Final available times:", sortedTimes);
     setAvailableTimes(sortedTimes);
   }, [selectedDate, doctorTimeSlots, timeSlots, id, appointments]);
 
@@ -383,7 +385,7 @@ export const DoctorPage = () => {
             <div className="tw-justify-items-center">
               <div className="tw-w-[140px] tw-h-[140px] md:tw-w-[140px] md:tw-h-[140px] tw-overflow-hidden tw-flex tw-items-center tw-justify-center tw-rounded-full">
                 <img
-                  src={doctorDetails?.image}
+                  src={`http://localhost:5000/uploads/${doctorDetails?.image}`}
                   alt="Bác sĩ"
                   className="tw-w-full tw-h-full"
                 />
@@ -443,9 +445,9 @@ export const DoctorPage = () => {
                       className="tw-text-sm tw-px-2 tw-py-3 tw-border tw-w-[100px] tw-bg-gray-200 tw-cursor-pointer hover:tw-bg-sky-600 hover:tw-text-white"
                     >
                       <div className="tw-flex tw-gap-1 tw-justify-center">
-                        <p>{item.startTime}</p>
+                        <p>{item.startTime.substring(0, 5)}</p>
                         <p>-</p>
-                        <p>{item.endTime}</p>
+                        <p>{item.endTime.substring(0, 5)}</p>
                       </div>
                     </div>
                   ))
@@ -496,7 +498,7 @@ export const DoctorPage = () => {
       </div>
       <hr className="tw-w-full tw-h-[1px] tw-bg-slate-800" />
       <div className="tw-w-full tw-h-full tw-bg-slate-100 tw-py-8">
-        <div className="lg:tw-w-1/2 lg:tw-ml-28">
+        <div className="lg:tw-max-w-6xl tw-mx-auto">
           <div>
             <div className="tw-px-4 tw-text-base tw-font-bold">
               <p>{doctorDetails?.fullName}</p>

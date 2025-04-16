@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../store/hooks";
+import { getUsers } from "../service/userService";
 
 // Define prop types for LeftSidebar
 interface LeftSidebarProps {
@@ -135,15 +136,30 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
 function Header() {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const navigate = useNavigate();
-  const [users, getUser] = useUser();
+  const [users, setUsers] = useState([]);
   const userId = localStorage.getItem("userId");
 
+  const fetchUsers = async () => {
+    try {
+      const res = await getUsers();
+      setUsers(res);
+    } catch (err) {
+      console.error("Lỗi lấy danh sách user:", err);
+    }
+  };
+
   useEffect(() => {
-    getUser();
+    fetchUsers();
   }, []);
 
+  // useEffect(() => {
+  //   getUser();
+  // }, []);
+
   const handleClick = () => {
-    const user = users.find((u) => u.id === Number(userId));
+    const user = users.find((u: any) => u.id === Number(userId)) as
+      | any
+      | undefined;
     if (!user || user.role !== "user") {
       navigate("/appointmentScheduleDoctor");
     } else {

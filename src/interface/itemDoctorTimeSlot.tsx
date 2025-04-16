@@ -1,18 +1,18 @@
 export class ItemDoctorTimeSlot {
   public id: number;
-  public doctor_id: number;
-  public timeSlot_id: number;
+  public doctorId: number;
+  public timeSlotId: number;
   public doctorTimeSlot_Date: Date;
 
   constructor(
     id: number,
-    doctor_id: number,
-    timeSlot_id: number,
+    doctorId: number,
+    timeSlotId: number,
     doctorTimeSlot_Date: Date
   ) {
     this.id = id;
-    this.doctor_id = doctor_id;
-    this.timeSlot_id = timeSlot_id;
+    this.doctorId = doctorId;
+    this.timeSlotId = timeSlotId;
     this.doctorTimeSlot_Date = doctorTimeSlot_Date;
   }
 }
