@@ -193,7 +193,7 @@ function BookingUser() {
     )}`; // "2025-04-07"
 
     let info = {
-      id: Date.now(), // ID là timestamp hiện tại
+      // id: Date.now(), // ID là timestamp hiện tại
       patientId: currentPatient?.id,
       doctorId: bookingData.doctorId ? Number(bookingData.doctorId) : null,
       timeSlotId: matchedTimeSlotId,

@@ -2,14 +2,17 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { useAppointmentData } from "./useAppointmentData";
 import { useState } from "react";
+import { updateAppointment } from "../service/appointmentService";
+import Swal from "sweetalert2";
 
 function AppointmentSchedule() {
   const userId = localStorage.getItem("userId");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 5;
   const { userAppointments, isLoading } = useAppointmentData(userId);
-  const [activeTab, setActiveTab] = useState("pending"); // "pending" or "confirmed"
+  const [activeTab, setActiveTab] = useState("pending"); // "pending", "confirmed", or "cancelled"
   const [dateFilter, setDateFilter] = useState(""); // State để lưu ngày cần tìm kiếm
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -20,6 +23,9 @@ function AppointmentSchedule() {
   );
   const confirmedAppointments = userAppointments.filter(
     (appointment) => appointment.status === "Đã xác nhận"
+  );
+  const cancelledAppointments = userAppointments.filter(
+    (appointment) => appointment.status === "Đã hủy"
   );
 
   // Filter by date
@@ -40,12 +46,17 @@ function AppointmentSchedule() {
   const filteredConfirmedAppointments = filterAppointmentsByDate(
     confirmedAppointments
   );
+  const filteredCancelledAppointments = filterAppointmentsByDate(
+    cancelledAppointments
+  );
 
   // Determine which appointments to display based on active tab
   const displayedAppointments =
     activeTab === "pending"
       ? filteredPendingAppointments
-      : filteredConfirmedAppointments;
+      : activeTab === "confirmed"
+      ? filteredConfirmedAppointments
+      : filteredCancelledAppointments;
 
   const totalPages = Math.ceil(displayedAppointments.length / itemsPerPage);
 
@@ -53,6 +64,53 @@ function AppointmentSchedule() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  // Reset pagination when changing tabs
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setCurrentPage(1);
+  };
+
+  // Handle cancel appointment functionality
+  const handleCancelAppointment = async (appointment: any) => {
+    // Hiển thị thông báo xác nhận trước khi hủy
+    const result = await Swal.fire({
+      title: "Xác nhận hủy lịch hẹn",
+      text: "Bạn chắc chắn muốn hủy lịch hẹn này không?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Đồng ý",
+      cancelButtonText: "Hủy bỏ",
+    });
+
+    // Nếu người dùng xác nhận muốn hủy
+    if (result.isConfirmed) {
+      try {
+        const InfoAppointment = {
+          id: appointment.id,
+          patient: appointment.patientId,
+          doctor: appointment.doctorId,
+          date: new Date(appointment.appointmentDate).toLocaleDateString(
+            "vi-VN"
+          ),
+          time: `${appointment.timeSlotId}`,
+          reason: appointment.reason,
+          status: "Đã hủy",
+        };
+
+        // Gọi API để cập nhật trạng thái
+        await updateAppointment(appointment.id, InfoAppointment);
+        Swal.fire("Hủy lịch hẹn thành công!", "", "success").then(() => {
+          location.reload();
+        });
+      } catch (error) {
+        console.error("Lỗi khi hủy lịch hẹn:", error);
+        Swal.fire("Đã xảy ra lỗi!", "Không thể hủy lịch hẹn.", "error");
+      }
+    }
+  };
 
   return (
     <>
@@ -114,7 +172,7 @@ function AppointmentSchedule() {
                   ? "tw-text-sky-600 tw-border-b-2 tw-border-sky-600"
                   : "tw-text-gray-500 hover:tw-text-sky-500"
               }`}
-              onClick={() => setActiveTab("pending")}
+              onClick={() => handleTabChange("pending")}
             >
               Chờ xác nhận ({filteredPendingAppointments.length})
             </button>
@@ -124,9 +182,19 @@ function AppointmentSchedule() {
                   ? "tw-text-sky-600 tw-border-b-2 tw-border-sky-600"
                   : "tw-text-gray-500 hover:tw-text-sky-500"
               }`}
-              onClick={() => setActiveTab("confirmed")}
+              onClick={() => handleTabChange("confirmed")}
             >
               Đã xác nhận ({filteredConfirmedAppointments.length})
+            </button>
+            <button
+              className={`tw-py-2 tw-px-4 tw-font-medium ${
+                activeTab === "cancelled"
+                  ? "tw-text-sky-600 tw-border-b-2 tw-border-sky-600"
+                  : "tw-text-gray-500 hover:tw-text-sky-500"
+              }`}
+              onClick={() => handleTabChange("cancelled")}
+            >
+              Đã hủy ({filteredCancelledAppointments.length})
             </button>
           </div>
 
@@ -215,15 +283,26 @@ function AppointmentSchedule() {
                         <div>
                           <p>Trạng thái:</p>
                         </div>
-                        <div>
+                        <div
+                          className={`${
+                            appointment.status === "Đã hủy"
+                              ? "tw-text-red-500"
+                              : appointment.status === "Đã xác nhận"
+                              ? "tw-text-green-500"
+                              : "tw-text-yellow-500"
+                          }`}
+                        >
                           <p>{appointment.status}</p>
                         </div>
                       </div>
 
-                      {/* Chỉ hiển thị nút Hủy lịch cho tab pending */}
-                      {activeTab === "pending" && (
+                      {/* Button to cancel appointment - only show in pending and confirmed tabs */}
+                      {activeTab !== "cancelled" && (
                         <div className="tw-flex tw-gap-4 tw-mt-1">
-                          <button className="tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-py-2 tw-px-4 tw-rounded">
+                          <button
+                            className="tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-py-2 tw-px-4 tw-rounded"
+                            onClick={() => handleCancelAppointment(appointment)}
+                          >
                             Hủy lịch
                           </button>
                         </div>
@@ -241,9 +320,13 @@ function AppointmentSchedule() {
                   ? dateFilter
                     ? "Không có lịch hẹn nào chờ xác nhận trong ngày này"
                     : "Không có lịch hẹn nào chờ xác nhận"
+                  : activeTab === "confirmed"
+                  ? dateFilter
+                    ? "Không có lịch hẹn nào đã xác nhận trong ngày này"
+                    : "Không có lịch hẹn nào đã xác nhận"
                   : dateFilter
-                  ? "Không có lịch hẹn nào đã xác nhận trong ngày này"
-                  : "Không có lịch hẹn nào đã xác nhận"}
+                  ? "Không có lịch hẹn nào đã hủy trong ngày này"
+                  : "Không có lịch hẹn nào đã hủy"}
               </p>
             </div>
           )}

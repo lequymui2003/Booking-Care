@@ -1,20 +1,59 @@
 import { useEffect, useState } from "react";
-import {
-  useAppointment,
-  usePatient,
-  useDoctor,
-  useTimeSlot,
-  useClinic,
-} from "../store/hooks";
-import { ItemAppointment, ItemDoctor } from "../interface/itemClass";
+// import {
+//   useAppointment,
+//   usePatient,
+//   useDoctor,
+//   useTimeSlot,
+//   useClinic,
+// } from "../store/hooks";
+// import { ItemAppointment, ItemDoctor } from "../interface/itemClass";
+import { ItemAppointment } from "../interface/itemAppointment";
+import { ItemPatient } from "../interface/itemPatient";
+import { ItemDoctor } from "../interface/itemDoctor";
+import { ItemTimeSlot } from "../interface/itemTimeSlot";
+import { ItemClinic } from "../interface/listClinic";
+import { getPatients } from "../service/patientService";
+import { getAppointments } from "../service/appointmentService";
+import { getDoctors } from "../service/doctorService";
+import { getTimeSlots } from "../service/timeSlotService";
+import { getClinics } from "../service/clinicService";
 
 export const useAppointmentDataDoctor = (userId: string | null) => {
   const [userAppointments, setUserAppointments] = useState<any[]>([]);
-  const [appointments, getAppointments] = useAppointment();
-  const [patients, getPatients] = usePatient();
-  const [doctors, getDoctors] = useDoctor();
-  const [timeSlots, getTimeSlots] = useTimeSlot();
-  const [clinics, getClinics] = useClinic();
+  const [appointments, setAppointments] = useState([]);
+  const [doctors, setDoctors] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [clinics, setClinics] = useState([]);
+  const [patients, setPatients] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const [
+        doctorList,
+        patientList,
+        clinicsList,
+        timeSlotlist,
+        appointmentsList,
+      ] = await Promise.all([
+        getDoctors(),
+        getPatients(),
+        getClinics(),
+        getTimeSlots(),
+        getAppointments(),
+      ]);
+      setDoctors(doctorList);
+      setClinics(clinicsList);
+      setPatients(patientList);
+      setAppointments(appointmentsList);
+      setTimeSlots(timeSlotlist);
+    } catch (err) {
+      console.error("❌ Lỗi khi lấy danh sách", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   // Hàm định dạng ngày tháng
   const formatAppointmentDate = (dateString: string) => {
@@ -36,28 +75,20 @@ export const useAppointmentDataDoctor = (userId: string | null) => {
   };
 
   useEffect(() => {
-    getAppointments();
-    getPatients();
-    getDoctors();
-    getTimeSlots();
-    getClinics();
-  }, []);
-
-  useEffect(() => {
     if (appointments && patients && doctors && timeSlots && clinics) {
       const doctorInfo = doctors.find(
         (d: ItemDoctor) => d.useId === Number(userId)
-      );
+      ) as ItemDoctor | undefined;
       console.log("Doctor Info:", doctorInfo); // Log thông tin bác sĩ
       const userApps = appointments.filter(
-        (app: ItemAppointment) => app.doctorId === doctorInfo.id
+        (app: ItemAppointment) => app.doctorId === doctorInfo?.id
       );
 
-      const enrichedApps = userApps.map((app: any) => {
-        const patient = patients.find((p: any) => p.id === app.patientId);
-        const doctor = doctors.find((d: any) => d.id === app.doctorId);
-        const timeSlot = timeSlots.find((ts: any) => ts.id === app.timeSlotId);
-        const clinic = clinics.find((c: any) => c.id === doctor?.clinicId);
+      const enrichedApps = userApps.map((app: ItemAppointment) => {
+        const patient = patients.find((p: ItemPatient) => p.id === app.patientId) as ItemPatient | undefined;
+        const doctor = doctors.find((d: ItemDoctor) => d.id === app.doctorId) as ItemDoctor | undefined;
+        const timeSlot = timeSlots.find((ts: ItemTimeSlot) => ts.id === app.timeSlotId) as ItemTimeSlot | undefined;
+        const clinic = clinics.find((c: ItemClinic) => c.id === doctor?.clinicId) as ItemClinic | undefined;
 
         return {
           ...app,
@@ -67,7 +98,7 @@ export const useAppointmentDataDoctor = (userId: string | null) => {
           clinicName: clinic?.clinicName || "Không xác định",
           startTime: timeSlot?.startTime || "--:--",
           endTime: timeSlot?.endTime || "--:--",
-          formattedDate: formatAppointmentDate(app.appointmentDate),
+          formattedDate: formatAppointmentDate(app.appointmentDate.toString()),
         };
       });
 

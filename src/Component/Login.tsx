@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 // import { useUser } from "../store/hooks";
 import { getUsers } from "../service/userService";
+import { ItemUser } from "../interface/itemUser";
+import bcrypt from "bcryptjs";
 
 function Login() {
   const navigate = useNavigate();
@@ -10,6 +12,7 @@ function Login() {
   // State để lưu giá trị từ các ô input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
 
   const fetchUsers = async () => {
@@ -25,21 +28,16 @@ function Login() {
     fetchUsers();
   }, []);
 
-  // Lấy dữ liệu user từ server
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
+  // console.log(users);
 
   // Xử lý khi nhấn nút "Đăng nhập"
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Ngăn chặn reload trang
 
     // Kiểm tra thông tin đăng nhập
-    const foundUser = users.find(
-      (u: any) => u.email === email && u.password === password
-    ) as any | undefined;
+    const foundUser = users.find((u: ItemUser) => u.email === email) as ItemUser | undefined;
 
-    if (foundUser) {
+    if (foundUser && await bcrypt.compare(password, foundUser.password)) {
       // Đăng nhập thành công
       console.log("Đăng nhập thành công!");
       // Tạo token ngẫu nhiên

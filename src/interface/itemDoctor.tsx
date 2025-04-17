@@ -2,7 +2,7 @@ export class ItemDoctor {
   public id: number;
   public specialtiesId: number;
   public clinicId: number;
-  public use_id: number;
+  public useId: number;
   public fullName: string;
   public sex: string;
   public date: Date;
@@ -22,7 +22,7 @@ export class ItemDoctor {
     id: number,
     specialtiesId: number,
     clinicId: number,
-    use_id: number,
+    useId: number,
     fullName: string,
     sex: string,
     date: Date,
@@ -41,7 +41,7 @@ export class ItemDoctor {
     this.id = id;
     this.specialtiesId = specialtiesId;
     this.clinicId = clinicId;
-    this.use_id = use_id;
+    this.useId = useId;
     this.fullName = fullName;
     this.sex = sex;
     this.date = date;
