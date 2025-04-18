@@ -9,7 +9,7 @@ function Doctor() {
   const [doctor, setDoctor] = useState([]);
   const [doctorList, setDoctorList] = useState<ItemDoctor[]>([]);
 
-  const fetchUsers = async () => {
+  const fetchData = async () => {
     try {
       const res = await getDoctors();
       setDoctor(res);
@@ -19,12 +19,8 @@ function Doctor() {
   };
 
   useEffect(() => {
-    fetchUsers();
+    fetchData();
   }, []);
-  // Chỉ gọi API một lần khi component mount
-  // useEffect(() => {
-  //   getDoctor();
-  // }, []);
 
   // Cập nhật doctorList khi doctor thay đổi
   useEffect(() => {
@@ -40,7 +36,7 @@ function Doctor() {
           <Slide
             duration={3000}
             transitionDuration={500}
-            autoplay={true}
+            // autoplay={true}
             infinite={true}
             arrows={true}
             slidesToScroll={1}

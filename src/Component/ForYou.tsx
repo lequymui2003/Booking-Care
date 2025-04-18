@@ -1,9 +1,12 @@
+import { useNavigate } from "react-router-dom";
 import ListForYou from "../data/dataForYou";
 export class ItemForYou {
+  public id: number;
   public img: string;
   public title: string;
 
-  constructor(img: string, title: string) {
+  constructor(img: string, title: string, id: number) {
+    this.id =id
     this.img = img;
     this.title = title;
   }
@@ -20,8 +23,12 @@ function ForYou() {
 }
 
 export function ElementForYou(props: { index: number; data: ItemForYou }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/listInfo/${props.data.id}`);
+  };
   return (
-    <a key={props.index} href="">
+    <div key={props.index} onClick={handleClick}>
       <div className="tw-p-4 tw-flex tw-flex-col tw-gap-2">
         <div className="tw-flex tw-justify-center">
           <img
@@ -34,7 +41,7 @@ export function ElementForYou(props: { index: number; data: ItemForYou }) {
           <p>{props.data.title}</p>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 export default ForYou;

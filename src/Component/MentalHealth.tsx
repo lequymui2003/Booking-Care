@@ -20,7 +20,7 @@ function MentalHealth() {
         <Slide
           duration={3000}
           transitionDuration={500}
-          autoplay={true}
+          // autoplay={true}
           infinite={true}
           arrows={true}
           slidesToScroll={1} // Cuộn 1 phần tử mỗi lần nhấn nút

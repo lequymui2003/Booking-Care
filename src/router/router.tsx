@@ -8,6 +8,8 @@ import AppointmentScheduleDoctor from "../Component/AppointmentScheduleDoctor";
 import Login from "../Component/Login";
 import Register from "../Component/Register";
 import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
+import ListInfo from "../Component/ListInFo";
+
 
 function MainRouter() {
   return (
@@ -19,6 +21,7 @@ function MainRouter() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/doctorPage/:id" element={<DoctorPage />} />
+        <Route path="/listInfo/:id" element={<ListInfo />} />
 
         {/* Các route yêu cầu đăng nhập */}
         <Route

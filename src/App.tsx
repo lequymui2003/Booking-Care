@@ -103,7 +103,7 @@ function App() {
       </div>
 
       {/* Gợi ý của BookingCare*/}
-      <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto sm: tw-px-3">
+      {/* <div className="tw-max-w-6xl tw-min-h-[200px] tw-mx-auto sm: tw-px-3">
         <div className="tw-text-2xl tw-font-medium">
           <p>Gợi ý của BookingCare</p>
         </div>
@@ -123,7 +123,7 @@ function App() {
             </div>
           </a>
         </div>
-      </div>
+      </div> */}
 
       {/* Sức khỏe tinh thần */}
       <div

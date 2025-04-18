@@ -40,7 +40,6 @@ function AppointmentSchedule() {
     });
   };
 
-  // Apply both status and date filters
   const filteredPendingAppointments =
     filterAppointmentsByDate(pendingAppointments);
   const filteredConfirmedAppointments = filterAppointmentsByDate(
@@ -50,7 +49,6 @@ function AppointmentSchedule() {
     cancelledAppointments
   );
 
-  // Determine which appointments to display based on active tab
   const displayedAppointments =
     activeTab === "pending"
       ? filteredPendingAppointments
@@ -65,13 +63,12 @@ function AppointmentSchedule() {
     currentPage * itemsPerPage
   );
 
-  // Reset pagination when changing tabs
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setCurrentPage(1);
   };
 
-  // Handle cancel appointment functionality
+  // // hàm hủy lịch hẹn
   const handleCancelAppointment = async (appointment: any) => {
     // Hiển thị thông báo xác nhận trước khi hủy
     const result = await Swal.fire({
@@ -297,16 +294,19 @@ function AppointmentSchedule() {
                       </div>
 
                       {/* Button to cancel appointment - only show in pending and confirmed tabs */}
-                      {activeTab !== "cancelled" && (
-                        <div className="tw-flex tw-gap-4 tw-mt-1">
-                          <button
-                            className="tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-py-2 tw-px-4 tw-rounded"
-                            onClick={() => handleCancelAppointment(appointment)}
-                          >
-                            Hủy lịch
-                          </button>
-                        </div>
-                      )}
+                      {activeTab !== "cancelled" &&
+                        activeTab !== "confirmed" && (
+                          <div className="tw-flex tw-gap-4 tw-mt-1">
+                            <button
+                              className="tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-py-2 tw-px-4 tw-rounded"
+                              onClick={() =>
+                                handleCancelAppointment(appointment)
+                              }
+                            >
+                              Hủy lịch
+                            </button>
+                          </div>
+                        )}
                     </div>
                   </div>
                   <hr />
