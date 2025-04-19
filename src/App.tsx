@@ -2,18 +2,35 @@ import Header from "./Component/Header";
 import Banner from "./Component/Banner";
 import ForYou from "./Component/ForYou";
 import ComprehensiveService from "./Component/ComprehensiveService";
-import Specialty from "./Component/Specialty";
-import MedicalFacility from "./Component/MedicalFacility";
-import Doctor from "./Component/Doctor";
-import RemoteExamination from "./Component/RemoteExamination";
-import MentalHealth from "./Component/MentalHealth";
+import Specialty from "./pages/Specialties/Specialty";
+import MedicalFacility from "./pages/Clinic/MedicalFacility";
+import Doctor from "./pages/Doctor/Doctor";
+import RemoteExamination from "./pages/Specialties/RemoteExamination";
+import MentalHealth from "./pages/Specialties/MentalHealth";
 import Handbook from "./Component/Handbook";
 import "react-slideshow-image/dist/styles.css";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "./Component/Footer";
-import "./App.css"
+import "./App.css";
 
 function App() {
+  const navigate = useNavigate();
+  const handleClickClinic = () => {
+    navigate("/listInfo/1");
+  };
+  const handleClickDoctor = () => {
+    navigate("/listInfo/2");
+  };
+  const handleClickSpecialties = () => {
+    navigate("/specialtyPage");
+  };
+  const handleClickRemoteExamination = () => {
+    navigate("/remoteExamination");
+  };
+  const handleClickMentalHealthPage = () => {
+    navigate("/mentalHealthPage");
+  };
+
   return (
     <>
       <Header />
@@ -44,7 +61,7 @@ function App() {
             <p>Chuyên khoa</p>
           </div>
           <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
-            <button>Xem thêm</button>
+            <button onClick={handleClickSpecialties}>Xem thêm</button>
           </div>
         </div>
         <div className="tw-flex tw-gap-16">
@@ -59,7 +76,7 @@ function App() {
             <p>Cơ sở y tế</p>
           </div>
           <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
-            <button>Xem thêm</button>
+            <button onClick={handleClickClinic}>Xem thêm</button>
           </div>
         </div>
         <div className="tw-flex tw-gap-16">
@@ -78,7 +95,7 @@ function App() {
               <p>Bác sĩ nổi bật</p>
             </div>
             <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
-              <button>Xem thêm</button>
+              <button onClick={handleClickDoctor}>Xem thêm</button>
             </div>
           </div>
           <div className="tw-flex tw-gap-8">
@@ -94,7 +111,7 @@ function App() {
             <p>Khám từ xa</p>
           </div>
           <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
-            <button>Xem thêm</button>
+            <button onClick={handleClickRemoteExamination}>Xem thêm</button>
           </div>
         </div>
         <div className="tw-flex tw-gap-16">
@@ -131,8 +148,13 @@ function App() {
         style={{ backgroundImage: "url('./png/background.png')" }}
       >
         <div className="tw-max-w-6xl tw-mx-auto tw-py-5 sm: tw-px-3 ">
-          <div className="tw-text-2xl tw-font-normal">
-            <p>Sức khỏe tinh thần</p>
+          <div className="tw-flex tw-justify-between">
+            <div className="tw-text-2xl tw-font-normal">
+              <p>Sức khỏe tinh thần</p>
+            </div>
+            <div className="tw-bg-blue-100 tw-text-blue-500 tw-py-[10px] tw-px-2 tw-rounded-2xl tw-text-[20px] tw-font-medium">
+              <button onClick={handleClickMentalHealthPage}>Xem thêm</button>
+            </div>
           </div>
           <div className="tw-flex tw-gap-16 tw-mt-7">
             <MentalHealth />
@@ -156,9 +178,9 @@ function App() {
       </div>
 
       {/* footer */}
-       {/* Thêm Outlet để hiển thị nội dung động */}
-       <Outlet />
-       <Footer />
+      {/* Thêm Outlet để hiển thị nội dung động */}
+      <Outlet />
+      <Footer />
     </>
   );
 }

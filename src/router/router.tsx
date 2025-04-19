@@ -1,15 +1,17 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import App from "../App";
 import ScrollToTop from "./ScrollToTop";
-import { DoctorPage } from "../Component/DoctorPage"; // Đường dẫn đúng với file DoctorPage.tsx
+import { DoctorPage } from "../pages/Doctor/DoctorPage"; // Đường dẫn đúng với file DoctorPage.tsx
 import BookingUser from "../Component/BookingUser";
-import AppointmentSchedule from "../Component/AppointmentSchedule";
-import AppointmentScheduleDoctor from "../Component/AppointmentScheduleDoctor";
+import AppointmentSchedule from "../pages/Patient/AppointmentSchedule";
+import AppointmentScheduleDoctor from "../pages/Doctor/AppointmentScheduleDoctor";
 import Login from "../Component/Login";
 import Register from "../Component/Register";
 import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
 import ListInfo from "../Component/ListInFo";
-
+import RemoteExaminationPage from "../pages/Specialties/RemoteExaminationPage";
+import MentalHealthPage from "../pages/Specialties/MentalHealthPage";
+import SpecialtyPage from "../pages/Specialties/SpecialtyPage";
 
 function MainRouter() {
   return (
@@ -22,6 +24,9 @@ function MainRouter() {
         <Route path="/register" element={<Register />} />
         <Route path="/doctorPage/:id" element={<DoctorPage />} />
         <Route path="/listInfo/:id" element={<ListInfo />} />
+        <Route path="/remoteExamination" element={<RemoteExaminationPage />} />
+        <Route path="/mentalHealthPage" element={<MentalHealthPage />} />
+        <Route path="/specialtyPage" element={<SpecialtyPage />} />
 
         {/* Các route yêu cầu đăng nhập */}
         <Route

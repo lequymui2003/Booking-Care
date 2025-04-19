@@ -1,5 +1,5 @@
-import Header from "../Component/Header";
-import Footer from "../Component/Footer";
+import Header from "../../Component/Header";
+import Footer from "../../Component/Footer";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 // import {
@@ -10,19 +10,19 @@ import { useNavigate, useParams } from "react-router-dom";
 //   useTimeSlot,
 //   useAppointment,
 // } from "../store/hooks";
-import { getDoctors } from "../service/doctorService";
-import { getSpecialties } from "../service/specialtiesService";
-import { getClinics } from "../service/clinicService";
-import { getDoctorTimeSlots } from "../service/doctorTimeSlotService";
-import { getTimeSlots } from "../service/timeSlotService";
-import { getAppointments } from "../service/appointmentService";
+import { getDoctors } from "../../service/doctorService";
+import { getSpecialties } from "../../service/specialtiesService";
+import { getClinics } from "../../service/clinicService";
+import { getDoctorTimeSlots } from "../../service/doctorTimeSlotService";
+import { getTimeSlots } from "../../service/timeSlotService";
+import { getAppointments } from "../../service/appointmentService";
 
-import { ItemDoctor } from "../interface/itemDoctor";
-import { ItemSpecialty } from "../interface/itemSpecialty";
-import { ItemClinic } from "../interface/listClinic";
-import { ItemDoctorTimeSlot } from "../interface/itemDoctorTimeSlot";
-import { ItemTimeSlot } from "../interface/itemTimeSlot";
-import { ItemAppointment } from "../interface/itemAppointment";
+import { ItemDoctor } from "../../interface/itemDoctor";
+import { ItemSpecialty } from "../../interface/itemSpecialty";
+import { ItemClinic } from "../../interface/listClinic";
+import { ItemDoctorTimeSlot } from "../../interface/itemDoctorTimeSlot";
+import { ItemTimeSlot } from "../../interface/itemTimeSlot";
+import { ItemAppointment } from "../../interface/itemAppointment";
 
 export const DoctorPage = () => {
   const navigate = useNavigate();

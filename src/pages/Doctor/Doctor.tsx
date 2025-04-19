@@ -1,10 +1,8 @@
-import ListDoctor from "../data/dataDoctor";
 import { Slide } from "react-slideshow-image";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-// import { useDoctor } from "../store/hooks";
-import { ItemDoctor } from "../interface/itemDoctor";
-import { getDoctors } from "../service/doctorService";
+import { ItemDoctor } from "../../interface/itemDoctor";
+import { getDoctors } from "../../service/doctorService";
 function Doctor() {
   const [doctor, setDoctor] = useState([]);
   const [doctorList, setDoctorList] = useState<ItemDoctor[]>([]);

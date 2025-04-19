@@ -1,8 +1,8 @@
-import Header from "./Header";
-import Footer from "./Footer";
-import { useAppointmentData } from "./useAppointmentData";
+import Header from "../../Component/Header";
+import Footer from "../../Component/Footer";
+import { useAppointmentData } from "../../hooks/useAppointmentData";
 import { useState } from "react";
-import { updateAppointment } from "../service/appointmentService";
+import { updateAppointment } from "../../service/appointmentService";
 import Swal from "sweetalert2";
 
 function AppointmentSchedule() {

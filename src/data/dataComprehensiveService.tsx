@@ -15,10 +15,6 @@ const ListComprehensiveService = [
     img: "./png/iconsuc-khoe-tinh-than.png",
     title: "Sức Khỏe Tinh Thần",
   },
-  {
-    img: "./png/iconbai-test-suc-khoe.png",
-    title: "Bài Test Sức Khỏe",
-  },
 ];
 
 export default ListComprehensiveService;

@@ -1,10 +1,10 @@
-import Header from "./Header";
-import Footer from "./Footer";
-import { useAppointmentDataDoctor } from "./useAppointmentData_Doctor";
+import Header from "../../Component/Header";
+import Footer from "../../Component/Footer";
+import { useAppointmentDataDoctor } from "../../hooks/useAppointmentData_Doctor";
 import { useState } from "react";
-import { ItemAppointment } from "../interface/itemClass";
+import { ItemAppointment } from "../../interface/itemClass";
 import Swal from "sweetalert2";
-import { updateAppointment } from "../service/appointmentService";
+import { updateAppointment } from "../../service/appointmentService";
 
 function AppointmentSchedule() {
   const userId = localStorage.getItem("userId");
