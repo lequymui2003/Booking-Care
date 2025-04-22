@@ -7,7 +7,7 @@ import MedicalFacility from "./pages/Clinic/MedicalFacility";
 import Doctor from "./pages/Doctor/Doctor";
 import RemoteExamination from "./pages/Specialties/RemoteExamination";
 import MentalHealth from "./pages/Specialties/MentalHealth";
-import Handbook from "./Component/Handbook";
+import Handbook from "./pages/Hanbook/Handbook";
 import "react-slideshow-image/dist/styles.css";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "./Component/Footer";

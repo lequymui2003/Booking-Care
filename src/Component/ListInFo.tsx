@@ -2,14 +2,14 @@ import Header from "./Header";
 import Footer from "./Footer";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ItemClinic } from "../interface/listClinic";
+// import { ItemClinic } from "../interface/listClinic";
 import { getClinics } from "../service/clinicService";
 import { getDoctors } from "../service/doctorService";
 import { getSpecialties } from "../service/specialtiesService";
 
-// Import các interface cho từng loại dữ liệu
-import { ItemDoctor } from "../interface/itemDoctor";
-import { ItemSpecialty } from "../interface/itemSpecialty";
+// // Import các interface cho từng loại dữ liệu
+// import { ItemDoctor } from "../interface/itemDoctor";
+// import { ItemSpecialty } from "../interface/itemSpecialty";
 
 function ListInfo() {
   const { id } = useParams();
@@ -117,11 +117,11 @@ export function Element(props: { index: number; data: any; type: string }) {
 
   const handleClick = () => {
     if (type === "clinic") {
-      navigate(`/clinicDetail/${data.id}`);
+      navigate(`/listDoctorClinic/${data.id}`);
     } else if (type === "doctor") {
       navigate(`/doctorPage/${data.id}`);
     } else if (type === "specialty") {
-      navigate(`/specialtyDetail/${data.id}`);
+      navigate(`/listDoctor/${data.id}`);
     }
   };
 

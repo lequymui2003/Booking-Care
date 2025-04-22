@@ -12,6 +12,8 @@ import ListInfo from "../Component/ListInFo";
 import RemoteExaminationPage from "../pages/Specialties/RemoteExaminationPage";
 import MentalHealthPage from "../pages/Specialties/MentalHealthPage";
 import SpecialtyPage from "../pages/Specialties/SpecialtyPage";
+import { ListDoctor } from "../Component/ListDoctor";
+import { ListDoctorClinic } from "../Component/LisDoctorClinic";
 
 function MainRouter() {
   return (
@@ -27,6 +29,8 @@ function MainRouter() {
         <Route path="/remoteExamination" element={<RemoteExaminationPage />} />
         <Route path="/mentalHealthPage" element={<MentalHealthPage />} />
         <Route path="/specialtyPage" element={<SpecialtyPage />} />
+        <Route path="/listDoctor/:id" element={<ListDoctor />} />
+        <Route path="/listDoctorClinic/:id" element={<ListDoctorClinic />} />
 
         {/* Các route yêu cầu đăng nhập */}
         <Route

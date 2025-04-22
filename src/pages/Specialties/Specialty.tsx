@@ -2,6 +2,7 @@ import { Slide } from "react-slideshow-image";
 import { useState, useEffect } from "react";
 import { getSpecialties } from "../../service/specialtiesService";
 import { ItemSpecialty } from "../../interface/itemSpecialty";
+import { useNavigate } from "react-router-dom";
 
 function Specialty() {
   const [specialty, setSpecialty] = useState([]);
@@ -29,7 +30,6 @@ function Specialty() {
       setSpecialtyList(ListSpecialty1);
     }
   }, [specialty]);
-
 
   return (
     <>
@@ -73,8 +73,13 @@ export function ElementSpecialty(props: {
   index: number;
   data: ItemSpecialty;
 }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/listDoctor/${props.data.id}`);
+  };
+
   return (
-    <a key={props.index} href="">
+    <a key={props.index} href="" onClick={handleClick}>
       <div className="tw-my-4">
         <div className="tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
           <div className="tw-p-5">

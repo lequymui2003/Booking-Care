@@ -2,10 +2,15 @@ function Banner() {
   return (
     <>
       {/*Banner*/}
-      <div
-        className="tw-w-full tw-h-[250px] sm:tw-h-[350px] md:tw-h-[445px] lg:tw-h-[550px] xl:tw-h-[650px] tw-bg-cover tw-bg-center tw-bg-no-repeat"
-        style={{ backgroundImage: "url('./jpg/bannerHome1.jpg')" }}
-      ></div>
+      <div className="tw-w-full tw-aspect-w-16 tw-aspect-h-9">
+        {" "}
+        {/* Tỉ lệ 16:9 */}
+        <img
+          src="./png/banner.png"
+          alt="Banner"
+          className="tw-w-full tw-h-full tw-object-cover"
+        />
+      </div>
     </>
   );
 }

@@ -78,7 +78,7 @@ function SpecialtyElement(props: { index: number; data: ItemSpecialty }) {
   const { data, index } = props;
 
   const handleClick = () => {
-    navigate(`/specialtyDetail/${data.id}`);
+    navigate(`/listDoctor/${data.id}`);
   };
 
   return (

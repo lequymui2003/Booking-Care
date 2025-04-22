@@ -1,4 +1,4 @@
-import ListHandbook from "../data/dataHandbook";
+import ListHandbook from "../../data/dataHandbook";
 import { Slide } from "react-slideshow-image";
 
 export class ItemHandbook {

@@ -2,6 +2,7 @@ import { Slide } from "react-slideshow-image";
 import { ItemClinic } from "../../interface/listClinic";
 import { getClinics } from "../../service/clinicService";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function MedicalFacility() {
   const [clinic, setClinic] = useState([]);
@@ -68,8 +69,12 @@ export function ElementMedicalFacility(props: {
   index: number;
   data: ItemClinic;
 }) {
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate(`/listDoctorClinic/${props.data.id}`);
+  };
   return (
-    <a key={props.index} href="">
+    <a key={props.index} href="" onClick={handleClick}>
       <div className="tw-my-4">
         <div className=" tw-bg-white tw-rounded-xl tw-w-80 tw-h-[272px] tw-border tw-border-gray-300">
           <div className="tw-flex tw-flex-col tw-justify-between tw-h-full tw-pb-3">

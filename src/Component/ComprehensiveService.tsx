@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import ListComprehensiveService from "../data/dataComprehensiveService";
 export class ItemComprehensiveService {
+  public id: number;
   public img: string;
   public title: string;
-  constructor(img: string, title: string) {
+  constructor(id: number, img: string, title: string) {
+    this.id = id;
     this.img = img;
     this.title = title;
   }
@@ -28,8 +31,22 @@ export function ElementComprehensiveService(props: {
   index: number;
   data: ItemComprehensiveService;
 }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (props.data.id === 1) {
+      navigate("/specialtyPage");
+    } else if (props.data.id === 2) {
+      navigate("/remoteExamination");
+    } else if (props.data.id === 3) {
+      alert("chưa có trang này");
+    } else {
+      navigate("/mentalHealthPage");
+    }
+  };
+
   return (
-    <a key={props.index} href="">
+    <div key={props.index} onClick={handleClick} className="tw-cursor-pointer">
       <div
         className="tw-flex tw-items-center tw-gap-5 tw-p-4 tw-rounded-2xl tw-border-2 tw-bg-cover tw-bg-center tw-bg-no-repeat"
         style={{ backgroundImage: "url('./png/ic_background.png')" }}
@@ -41,7 +58,7 @@ export function ElementComprehensiveService(props: {
           <p>{props.data.title}</p>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 
