@@ -43,7 +43,7 @@ function Login() {
       // Tạo token ngẫu nhiên
       const token =
         Math.random().toString(36).substring(2) + Date.now().toString(36);
-      // localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
+      localStorage.setItem("user", JSON.stringify(foundUser)); // Lưu thông tin user vào localStorage
       localStorage.setItem("token", token); // Lưu token vào localStorage
       localStorage.setItem("userId", foundUser.id.toString()); // Lưu userId vào localStorage
       navigate("/"); // Chuyển hướng đến trang dashboard

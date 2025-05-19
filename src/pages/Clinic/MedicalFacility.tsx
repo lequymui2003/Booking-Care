@@ -1,5 +1,5 @@
 import { Slide } from "react-slideshow-image";
-import { ItemClinic } from "../../interface/listClinic";
+import { ItemClinic } from "../../interface/itemClinic";
 import { getClinics } from "../../service/clinicService";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";

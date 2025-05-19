@@ -13,7 +13,11 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
   const navigate = useNavigate();
 
   // Kiểm tra trạng thái đăng nhập
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user")!)
+    : null;
   const isLoggedIn = !!localStorage.getItem("token");
+  const isDoctor = user?.role === "doctor";
 
   // Navigation items cho người chưa đăng nhập
   const menuItems = [
@@ -23,22 +27,22 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
       path: "/",
     },
     {
-      title: "Chuyên khoa",
-      icon: "fas fa-stethoscope",
-      path: "/specialties",
-      description: "Tìm bác sĩ theo chuyên khoa",
-    },
-    {
       title: "Cơ sở y tế",
       icon: "fas fa-hospital",
-      path: "/medical-facilities",
+      path: "/listInfo/1",
       description: "Chọn bệnh viện phòng khám bệnh",
     },
     {
       title: "Bác sĩ",
       icon: "fas fa-user-md",
-      path: "/doctors",
+      path: "/listInfo/2",
       description: "Chọn bác sĩ giỏi",
+    },
+    {
+      title: "Chuyên khoa",
+      icon: "fas fa-stethoscope",
+      path: "/listInfo/3",
+      description: "Tìm bác sĩ theo chuyên khoa",
     },
     {
       title: "Đăng nhập / đăng ký",
@@ -49,7 +53,22 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
 
   // Navigation items cho người đã đăng nhập
   const menuItems2 = [
-    ...menuItems.slice(0, -1), // Sao chép tất cả mục trừ mục cuối cùng (Đăng nhập / đăng ký)
+    ...menuItems.slice(0, -1), // tất cả mục trừ "Đăng nhập / đăng ký"
+    {
+      title: "Hồ sơ",
+      icon: "fas fa-user",
+      path: isDoctor ? "/doctorProfilePage" : "/patientProfilePage",
+    },
+    // Nếu là doctor thì mới thêm mục "Lịch làm việc"
+    ...(isDoctor
+      ? [
+          {
+            title: "Lịch làm việc",
+            icon: "fas fa-briefcase",
+            path: "/doctorSchedulePage",
+          },
+        ]
+      : []),
     {
       title: "Đăng xuất",
       icon: "fas fa-sign-out-alt",
@@ -91,7 +110,7 @@ function LeftSidebar({ isOpen, onClose }: LeftSidebarProps) {
         {/* Sidebar Header */}
         <div className="tw-flex tw-justify-between tw-items-center tw-p-4 tw-border-b">
           <img
-            src="./svg/logo.svg"
+            src="/svg/logo.svg"
             alt="Logo"
             className="tw-w-[150px] tw-h-[32px]"
           />
@@ -152,10 +171,6 @@ function Header() {
     fetchUsers();
   }, []);
 
-  // useEffect(() => {
-  //   getUser();
-  // }, []);
-
   const handleClick = () => {
     const user = users.find((u: any) => u.id === Number(userId)) as
       | any
@@ -203,24 +218,27 @@ function Header() {
           <div className="xl:tw-flex tw-gap-4 tw-items-center sm:tw-hidden md:tw-flex">
             <div className="tw-hidden md:tw-flex">
               <ul className="tw-flex tw-gap-4 lg:tw-gap-8">
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Chuyên khoa
-                  </a>
+                <li
+                  onClick={() => navigate("/listInfo/3")}
+                  className="tw-cursor-pointer"
+                >
+                  <p className="tw-text-xs tw-font-semibold ">Chuyên khoa</p>
                   <p className="tw-text-[10px]">Tìm bác sĩ theo chuyên khoa</p>
                 </li>
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Cơ sở y tế
-                  </a>
+                <li
+                  onClick={() => navigate("/listInfo/1")}
+                  className="tw-cursor-pointer"
+                >
+                  <p className="tw-text-xs tw-font-semibold">Cơ sở y tế</p>
                   <p className="tw-text-[10px]">
                     Chọn bệnh viện phòng khám bệnh
                   </p>
                 </li>
-                <li>
-                  <a href="" className="tw-text-xs tw-font-semibold">
-                    Bác sĩ
-                  </a>
+                <li
+                  onClick={() => navigate("/listInfo/2")}
+                  className="tw-cursor-pointer"
+                >
+                  <p className="tw-text-xs tw-font-semibold">Bác sĩ</p>
                   <p className="tw-text-[10px]">Chọn bác sĩ giỏi</p>
                 </li>
               </ul>

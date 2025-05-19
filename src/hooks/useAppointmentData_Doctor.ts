@@ -11,7 +11,7 @@ import { ItemAppointment } from "../interface/itemAppointment";
 import { ItemPatient } from "../interface/itemPatient";
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
-import { ItemClinic } from "../interface/listClinic";
+import { ItemClinic } from "../interface/itemClinic";
 import { getPatients } from "../service/patientService";
 import { getAppointments } from "../service/appointmentService";
 import { getDoctors } from "../service/doctorService";
@@ -85,10 +85,18 @@ export const useAppointmentDataDoctor = (userId: string | null) => {
       );
 
       const enrichedApps = userApps.map((app: ItemAppointment) => {
-        const patient = patients.find((p: ItemPatient) => p.id === app.patientId) as ItemPatient | undefined;
-        const doctor = doctors.find((d: ItemDoctor) => d.id === app.doctorId) as ItemDoctor | undefined;
-        const timeSlot = timeSlots.find((ts: ItemTimeSlot) => ts.id === app.timeSlotId) as ItemTimeSlot | undefined;
-        const clinic = clinics.find((c: ItemClinic) => c.id === doctor?.clinicId) as ItemClinic | undefined;
+        const patient = patients.find(
+          (p: ItemPatient) => p.id === app.patientId
+        ) as ItemPatient | undefined;
+        const doctor = doctors.find(
+          (d: ItemDoctor) => d.id === app.doctorId
+        ) as ItemDoctor | undefined;
+        const timeSlot = timeSlots.find(
+          (ts: ItemTimeSlot) => ts.id === app.timeSlotId
+        ) as ItemTimeSlot | undefined;
+        const clinic = clinics.find(
+          (c: ItemClinic) => c.id === doctor?.clinicId
+        ) as ItemClinic | undefined;
 
         return {
           ...app,

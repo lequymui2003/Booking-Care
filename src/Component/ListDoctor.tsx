@@ -12,7 +12,7 @@ import { getAppointments } from "../service/appointmentService";
 
 import { ItemDoctor } from "../interface/itemDoctor";
 import { ItemSpecialty } from "../interface/itemSpecialty";
-import { ItemClinic } from "../interface/listClinic";
+import { ItemClinic } from "../interface/itemClinic";
 import { ItemDoctorTimeSlot } from "../interface/itemDoctorTimeSlot";
 import { ItemTimeSlot } from "../interface/itemTimeSlot";
 import { ItemAppointment } from "../interface/itemAppointment";

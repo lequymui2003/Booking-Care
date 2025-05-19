@@ -14,6 +14,9 @@ import MentalHealthPage from "../pages/Specialties/MentalHealthPage";
 import SpecialtyPage from "../pages/Specialties/SpecialtyPage";
 import { ListDoctor } from "../Component/ListDoctor";
 import { ListDoctorClinic } from "../Component/LisDoctorClinic";
+import PatientProfilePage from "../pages/Patient/PatientProfile";
+import DoctorProfilePage from "../pages/Doctor/DoctorProfile";
+import DoctorSchedulePage from "../pages/Doctor/workSchedule";
 
 function MainRouter() {
   return (
@@ -54,6 +57,30 @@ function MainRouter() {
           element={
             <ProtectedRoute>
               <AppointmentScheduleDoctor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patientProfilePage"
+          element={
+            <ProtectedRoute>
+              <PatientProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctorProfilePage"
+          element={
+            <ProtectedRoute>
+              <DoctorProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doctorSchedulePage"
+          element={
+            <ProtectedRoute>
+              <DoctorSchedulePage />
             </ProtectedRoute>
           }
         />
